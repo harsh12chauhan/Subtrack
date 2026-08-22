@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Subscriptions/Subscriptions.csproj" />
+  <Project Path="Payments/Payments.csproj" />
+  <Project Path="Authentication\Authentication.csproj" />
+</Solution>
