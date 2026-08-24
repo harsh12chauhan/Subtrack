@@ -1,6 +1,6 @@
 import { Route } from "react-router-dom";
 import DashboardLayout from "../Layouts/DashboardLayout";
-import Dashboard from "../Pages/Dashboard";
+import Dashboard from "../Components/Dashboard";
 import Subscription from "../Components/Subscription";
 import Payment from "../Components/Payment";
 

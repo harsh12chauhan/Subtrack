@@ -1,9 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
-import { logout } from "../Utils/Logout";
+import { Link, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
     
-  const location = useLocation();
+  const navigator = useNavigate();
 
   const menuItems = [
     {
@@ -27,6 +26,11 @@ const Sidebar = () => {
       path: "/notifications",
     },
   ];
+
+  const logout = () => {
+    localStorage.removeItem("accessToken");
+    navigator("/");
+  }
 
   return (
     <aside className="w-64 h-screen bg-slate-900 text-white p-5">
