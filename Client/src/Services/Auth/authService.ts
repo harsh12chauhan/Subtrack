@@ -3,6 +3,7 @@ import { authApiClient } from "./authApiClient";
 import type { LoginRequest, RegisterRequest } from "../../Types/auth";
 
 export const authService = {
+
   register: async (data: RegisterRequest) => {
     const response = await authApiClient.post("/auth/register", data);
 
@@ -13,5 +14,6 @@ export const authService = {
     const response = await authApiClient.post("/auth/login", data);
 
     return response.data;
-  },
+  }
+  
 };

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LoginService } from "../Services/Auth/authService";
+import {authService} from "../Services/Auth/authService";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const Login = () => {
         setIsLoading(true);
         setError("");
 
-        const response = await LoginService(email,password);
+        const response = await authService.login({email,password});
         
         localStorage.setItem("accessToken", response);
         console.log(email, password);
