@@ -21,7 +21,7 @@ export const subscriptionService = {
         return response.data;
     },
 
-    activeSubscription: async (subscriptionId:string) => {
+    activateSubscription: async (subscriptionId:string) => {
         const response = await subscriptionApiClient.put(`/subscription/status/${subscriptionId}/Active`);
 
         return response.data;
