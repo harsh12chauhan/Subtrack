@@ -55,7 +55,12 @@ pnpm-debug.log*
 .vscode/*
 
 # Development appsetting.json
-appsettings.Development.json
+# Ignore all appsettings files
+**/appsettings*.json
+
+# But keep the example
+!**/appsettings.example.json
+
 
 # ==========================================
 # Build / Test
