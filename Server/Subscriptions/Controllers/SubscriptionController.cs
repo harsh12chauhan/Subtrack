@@ -130,8 +130,8 @@ namespace Subscriptions.Controllers
 
             var subscriptions = await context.Subscription
                                     .AsNoTracking() // used to increase speed
-                                    .Where(x => x.UserId == userId)
-                                    .OrderByDescending(x => x.NextBillingDate)
+                                    .Where(x => x.UserId == userId && x.Status != BillingStatus.Cancelled)
+                                    .OrderBy(x => x.NextBillingDate)
                                     .ToListAsync();
 
             return Ok(subscriptions);
@@ -189,6 +189,19 @@ namespace Subscriptions.Controllers
             await context.SaveChangesAsync();
 
             return Ok("Subscription deleted.");
+        }
+
+        [HttpGet("categories")]
+        public async Task<IActionResult> GetCategories() {
+
+            var categories = await context.Subscription
+                                .AsNoTracking()
+                                .Select(x => x.Category)
+                                .Distinct()
+                                .OrderByDescending(x => x)
+                                .ToListAsync();
+
+            return Ok(categories);
         }
 
         private string? GetCurrentUserId()

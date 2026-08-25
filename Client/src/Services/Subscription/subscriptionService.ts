@@ -44,6 +44,12 @@ export const subscriptionService = {
 
         return response.data;
     },
+
+    getSubscriptionCategories: async () => {
+        const response = await subscriptionApiClient.get("/subscription/categories");
+
+        return response.data;
+    },
     
     getSubscriptions: async (subscriptionId: string) => {
         const response = await subscriptionApiClient.get(`/subscription/${subscriptionId}`);
