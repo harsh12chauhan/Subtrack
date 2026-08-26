@@ -20,7 +20,6 @@ const Login = () => {
         const response = await authService.login({email,password});
         
         localStorage.setItem("accessToken", response);
-        console.log(email, password);
 
         setemail("");
         setPassword("");

@@ -1,9 +1,9 @@
 import { paymentApiClient } from "./paymentApiClient";
-import type { payment } from "../../Types/payment";
+import type { createpayment } from "../../Types/payment";
 
 export const paymentService = {
     
-    createPayment: async (data: payment) => {
+    createPayment: async (data: createpayment) => {
         const response = await paymentApiClient.post("/payment/process", data);
 
         return response.data;

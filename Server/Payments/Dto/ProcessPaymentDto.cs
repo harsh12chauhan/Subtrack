@@ -4,7 +4,7 @@
     {
         public required Guid SubscriptionId { get; set; }
 
-        public required decimal Amount { get; set; }
+        public required decimal SubscriptionAmount { get; set; }
 
     }
 }

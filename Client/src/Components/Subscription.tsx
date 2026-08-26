@@ -3,6 +3,8 @@ import { subscriptionService } from "../Services/Subscription/subscriptionServic
 
 import SubscriptionModal from "./Subscription/SubscriptionModal";
 import EditSubscriptionModal from "./Subscription/EditSubscriptionModal";
+import { paymentService } from "../Services/Payment/paymentService";
+import type { CreatePayment } from "../Types/payment";
 
 const Subscription = () => {
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
@@ -62,6 +64,15 @@ const Subscription = () => {
       setSubscriptions((prev) =>
         prev.filter((subscription) => subscription.id !== id)
       );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handlePayment = async (payment: CreatePayment) => {
+    try {
+      await paymentService.createPayment(payment);
+      alert("Payment processed.");
     } catch (error) {
       console.error(error);
     }
@@ -128,7 +139,7 @@ const Subscription = () => {
 
       {/* Subscription Cards */}
 
-      <div className="max-h-[75vh] overflow-y-auto pr-2">
+      <div className="pr-2">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {subscriptions.map((subscription) => (
             <div
@@ -143,9 +154,8 @@ const Subscription = () => {
 
               <p className="text-gray-600">{subscription.category}</p>
 
-              <p className="mt-2">
-                Next Billing:{" "}
-                {new Date(subscription.nextBillingDate).toLocaleDateString()}
+              <p className="mt-2"> 
+                Next Billing:{" "}{new Date(subscription.nextBillingDate).toLocaleDateString()}
               </p>
 
               <div className="mt-3">
@@ -199,6 +209,13 @@ const Subscription = () => {
                   className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded cursor-pointer"
                 >
                   Cancel
+                </button>
+
+                <button
+                  onClick={() => handlePayment({subscriptionId: subscription.id, subscriptionAmount: subscription.amount })}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded cursor-pointer"
+                >
+                  Pay
                 </button>
               </div>
             </div>

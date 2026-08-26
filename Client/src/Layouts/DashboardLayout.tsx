@@ -9,10 +9,10 @@ const DashboardLayout = () => {
   }
 
   return (
-    <div className="flex">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar />
 
-      <main className="flex-1 overflow-y-auto p-6 bg-slate-100 min-h-screen">
+      <main className="flex-1 overflow-y-auto p-6 bg-slate-100 scrollbar-hide">
         <Outlet />
       </main>
     </div>

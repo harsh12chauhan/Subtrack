@@ -48,8 +48,8 @@ namespace Payments.Controller
             {
                 SubscriptionId = processPaymentDto.SubscriptionId,
                 UserId = userId,
-                Amount = processPaymentDto.Amount,
-                Status = (PaymentStatus)Random.Shared.Next(0, 4), //PaymentStatus.Completed,
+                Amount = processPaymentDto.SubscriptionAmount,
+                Status = (PaymentStatus)Random.Shared.Next(0, 4), // PaymentStatus.Completed,
                 TransactionReference = $"TXN-{Guid.NewGuid():N}"
             };
 
