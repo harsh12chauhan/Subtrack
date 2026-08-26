@@ -11,7 +11,7 @@ const SubscriptionModal = ({ onClose, onSave }: Props) => {
   const [amount, setAmount] = useState(0);
   const [category, setCategory] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
-  const [billingCycle, setBillingCycle] = useState("Billing Cycle");
+  const [billingCycle, setBillingCycle] = useState("Monthly");
   const [nextBillingDate, setNextBillingDate] = useState("");
   const [newCategory, setNewCategory] = useState("");
 
