@@ -1,0 +1,26 @@
+git clone <repo>
+
+cd Client
+npm install
+
+cd ..
+cd Server
+
+dotnet restore
+dotnet build
+
+Update-Database -Project Authentication -StartupProject Authentication
+Update-Database -Project Subscriptions -StartupProject Subscriptions
+Update-Database -Project Payments -StartupProject Payments
+
+./run-all.ps1
+
+cd ..
+
+cd Client
+
+npm run dev
+
+
+
+

@@ -1,0 +1,3 @@
+﻿Start-Process powershell -ArgumentList "-NoExit", "-Command", "dotnet run --project .\Authentication\Authentication.csproj"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "dotnet run --project .\Payments\Payments.csproj"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "dotnet run --project .\Subscriptions\Subscriptions.csproj"
