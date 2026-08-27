@@ -10,7 +10,7 @@ namespace Notifications.Data
         
         }
 
-        DbSet<Notification> Notification { get; set;}
+        public DbSet<Notification> Notification { get; set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
