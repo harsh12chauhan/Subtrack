@@ -191,6 +191,67 @@ namespace Subscriptions.Controllers
             return Ok("Subscription deleted.");
         }
 
+        [HttpPatch("renew/{subscriptionid:guid}")]
+        //[Authorize(Roles = "Worker")]
+        public async Task<IActionResult> RenewSubscription(Guid subscriptionid)
+        {
+            var subscription = await context.Subscription.FindAsync(subscriptionid);
+
+            if (subscription is null)
+            {
+                return NotFound("Subscription not found!");
+            }
+
+            if (subscription.Status == BillingStatus.Cancelled)
+            {
+                return BadRequest("Cancelled subscriptions cannot be renewed.");
+            }
+
+            if (subscription.Status != BillingStatus.Active)
+            {
+                return BadRequest("Only active subscriptions can be renewed.");
+            }
+
+            switch (subscription.BillingCycle)
+            {
+                case BillingCycle.Monthly:
+                    subscription.NextBillingDate = subscription.NextBillingDate.AddMonths(1);
+                    break;
+
+                case BillingCycle.Yearly:
+                    subscription.NextBillingDate = subscription.NextBillingDate.AddYears(1);
+                    break;
+
+                default:
+                    return BadRequest("Invalid billing cycle.");
+            }
+
+            await context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Subscription renewed.",
+                nextBillingDate = subscription.NextBillingDate
+            });
+        }
+
+        [HttpGet("due")]
+        //[Authorize(Roles = "Worker")]
+        public async Task<IActionResult> GetUserDueSubscriptions()
+        {            
+            var today = DateTime.UtcNow.Date;
+
+            var subscriptions = await context.Subscription
+                                .AsNoTracking()
+                                .Where(x =>
+                                    x.Status == BillingStatus.Active &&
+                                    x.NextBillingDate.Date == today)
+                                .OrderBy(x => x.NextBillingDate)
+                                .ToListAsync();
+
+            return Ok(subscriptions);
+        }
+
         [HttpGet("categories")]
         public async Task<IActionResult> GetCategories() {
 
