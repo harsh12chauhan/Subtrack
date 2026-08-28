@@ -191,6 +191,7 @@ namespace Subscriptions.Controllers
             return Ok("Subscription deleted.");
         }
 
+        [AllowAnonymous]
         [HttpPatch("renew/{subscriptionid:guid}")]
         //[Authorize(Roles = "Worker")]
         public async Task<IActionResult> RenewSubscription(Guid subscriptionid)
@@ -235,8 +236,9 @@ namespace Subscriptions.Controllers
             });
         }
 
+        [AllowAnonymous]
         [HttpGet("due")]
-        [Authorize(Roles = "Worker")]
+        //[Authorize(Roles = "Worker")]
         public async Task<IActionResult> GetUserDueSubscriptions()
         {            
             var today = DateTime.UtcNow.Date;

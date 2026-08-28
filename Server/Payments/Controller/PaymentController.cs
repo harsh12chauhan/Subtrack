@@ -21,34 +21,22 @@ namespace Payments.Controller
             context = _context;
         }
 
+        [AllowAnonymous]
         [HttpPost("process")]
         public async Task<IActionResult> ProcessPayment(ProcessPaymentDto processPaymentDto)
         {
-            var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (!Guid.TryParse(userIdGuid, out var userId))
-            {
-                return Unauthorized("Invalid user identifier.");
-            }
-
-            //Ensure that subscription exist's
-            //var IsSubscriptionExists = context.
-
-            //var subscription = await context.Subscription
-            //                        .FirstOrDefaultAsync(x =>
-            //                            x.Id == processPaymentDto.SubscriptionId &&
-            //                            x.UserId == userId);
-
-            //if (subscription == null)
+            //if (!Guid.TryParse(userIdGuid, out var userId))
             //{
-            //    return NotFound("Subscription not found.");
+            //    return Unauthorized("Invalid user identifier.");
             //}
 
             var payment = new Payment
             {
                 SubscriptionId = processPaymentDto.SubscriptionId,
-                UserId = userId,
-                Amount = processPaymentDto.SubscriptionAmount,
+                UserId = processPaymentDto.UserId,
+                Amount = processPaymentDto.amount,
                 Status = (PaymentStatus)Random.Shared.Next(0, 4), // PaymentStatus.Completed,
                 TransactionReference = $"TXN-{Guid.NewGuid():N}"
             };
