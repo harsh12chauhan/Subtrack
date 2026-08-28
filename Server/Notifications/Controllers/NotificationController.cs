@@ -18,8 +18,9 @@ namespace Notifications.Controllers
                 context = _context;
         }
 
+        [AllowAnonymous]
         [HttpPost("create")]
-        [Authorize(Roles = "Worker")]
+        //[Authorize(Roles = "Worker")]
         public async Task<IActionResult> CreateNotification(CreateNotificationDto createNotificationDto) {
 
             // will get the userid from subscription table

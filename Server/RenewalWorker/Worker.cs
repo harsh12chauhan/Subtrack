@@ -51,17 +51,21 @@ namespace RenewalWorker
    
             foreach (var subscription in subscriptions ?? [])
             {
-                logger.LogInformation(
-                    "Subscription: {name} Amount: {amount}",
-                    subscription.Name,
-                    subscription.Amount
-                );
+                logger.LogInformation("Subscription: {name} Amount: {amount}", subscription.Name,subscription.Amount);
 
-                await ProcessPayment(subscription);
+                var paymentSuccess = await ProcessPayment(subscription);
+                
+                await CreateNotification(subscription,paymentSuccess);
+
+                if (paymentSuccess)
+                {
+                    await RenewSubscription(subscription);
+                }
+
             }
         }
 
-        private async Task ProcessPayment(DueSubscriptionDto dueSubscriptionDto) {
+        private async Task<bool> ProcessPayment(DueSubscriptionDto subscription) {
 
             try
             {
@@ -69,25 +73,95 @@ namespace RenewalWorker
 
                 var paymentRequest = new CreatePaymentDto
                 {
-                    UserId = dueSubscriptionDto.UserId,
-                    SubscriptionId = dueSubscriptionDto.Id,
-                    Amount = dueSubscriptionDto.Amount
+                    UserId = subscription.UserId,
+                    SubscriptionId = subscription.Id,
+                    Amount = subscription.Amount
                 };
 
                 var response = await client.PostAsJsonAsync($"{apiEndpoints.PaymentApi}/payment/process", paymentRequest);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    logger.LogInformation("Payment created for {subscription}", dueSubscriptionDto.Name);
+                    logger.LogInformation("Payment created for {subscription}", subscription.Name);
+                    return true;
                 }
                 else
                 {
-                    logger.LogError("Payment failed for {subscription}", dueSubscriptionDto.Name);
+                    logger.LogError("Payment failed for {subscription}", subscription.Name);
+                    return false;
                 }
             }
             catch (Exception ex){
-                logger.LogError(ex,"Error processing payment for {subscription}", dueSubscriptionDto.Name);
+                logger.LogError(ex,"Error processing payment for {subscription}", subscription.Name);
+                return false;
             }
         }
+
+        private async Task CreateNotification(DueSubscriptionDto subscription, bool paymentSucceeded) {
+
+            try {
+                var client = httpClientFactory.CreateClient();
+                
+                var notification = new CreateNotificationDto{
+                        
+                    UserId = subscription.UserId,
+                    Title = paymentSucceeded ? "Payment Successful": "Payment Failed",
+                    Message = paymentSucceeded? $"{subscription.Name} renewed successfully.": $"{subscription.Name} payment failed.",
+                    Type = paymentSucceeded ? 1 : 2
+                };
+
+                var response = await client.PostAsJsonAsync($"{apiEndpoints.NotificationApi}/notification/create",notification);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    logger.LogInformation(
+                    "Notification created for {subscription}",
+                    subscription.Name);
+                }
+                else
+                {
+                    logger.LogError(
+                    "Notification creation failed for {subscription}",
+                    subscription.Name);
+                }
+
+
+            }
+            catch (Exception ex) {
+                logger.LogError(ex,"Notification error for {subscription}",subscription.Name);
+            }
+
+        }
+
+        private async Task RenewSubscription(DueSubscriptionDto subscription)
+        {
+            try
+            {
+                var client = httpClientFactory.CreateClient();
+
+                var response = await client.PatchAsync($"{apiEndpoints.SubscriptionApi}/subscription/renew/{subscription.Id}",null);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    logger.LogInformation(
+                        "Subscription renewed: {name}",
+                        subscription.Name);
+                }
+                else
+                {
+                    logger.LogError(
+                        "Failed to renew subscription: {name}",
+                        subscription.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(
+                    ex,
+                    "Renewal error for {name}",
+                    subscription.Name);
+            }
+        }
+
     }
 }
