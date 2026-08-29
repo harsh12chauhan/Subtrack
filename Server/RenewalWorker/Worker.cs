@@ -32,13 +32,11 @@ namespace RenewalWorker
         {            
 
             while (!stoppingToken.IsCancellationRequested)
-            {                
-                await GetJwtToken();
-
-                logger.LogInformation(
-    "Token Retrieved: {token}",
-    JwtToken?.Substring(0, 20)
-);
+            {                                
+                if (string.IsNullOrEmpty(JwtToken))
+                {
+                    await GetJwtToken();
+                }
 
                 await GetDueSubscriptions();  
                 
@@ -54,8 +52,7 @@ namespace RenewalWorker
 
             try
             {
-                var client = httpClientFactory.CreateClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtToken);
+                var client = CreateAutorizedClient();
 
                 var response = await client.GetAsync($"{apiEndpoints.SubscriptionApi}/subscription/due");
                 response.EnsureSuccessStatusCode();
@@ -66,25 +63,12 @@ namespace RenewalWorker
 
                 foreach (var subscription in subscriptions ?? [])
                 {
-                    logger.LogInformation("Subscription: {name} Amount: {amount}", subscription.Name, subscription.Amount);
+                    logger.LogInformation("Processing subscription {name} ({subscriptionId}) for user {userId}",subscription.Name,subscription.Id,subscription.UserId);
+                    logger.LogInformation("Started processing subscription {id}",subscription.Id);
 
-                    try
-                    {
-                        var paymentSuccess = await ProcessPayment(subscription);                    
+                    await ProcessSubscription(subscription);
 
-                        await CreateNotification(subscription, paymentSuccess);
-
-                        if (paymentSuccess)
-                        {
-                            await RenewSubscription(subscription);
-                            logger.LogInformation("Subscription {subscription} for user {userId} renewed successfully", subscription.Name, subscription.UserId);
-                        }
-
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.LogError(ex, "Failed processing subscription {id}", subscription.Id);
-                    }
+                    logger.LogInformation("Finished processing subscription {id}", subscription.Id);
                 }
             }
             catch (Exception ex)
@@ -97,8 +81,7 @@ namespace RenewalWorker
 
             try
             {
-                var client = httpClientFactory.CreateClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtToken);
+                var client = CreateAutorizedClient();
 
                 var paymentRequest = new CreatePaymentDto
                 {
@@ -107,7 +90,7 @@ namespace RenewalWorker
                     Amount = subscription.Amount
                 };
 
-                var response = await client.PostAsJsonAsync($"{apiEndpoints.PaymentApi}/payment/process", paymentRequest);
+                var response = await client.PostAsJsonAsync($"{apiEndpoints.PaymentApi}/payment/processinternal", paymentRequest);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -129,8 +112,7 @@ namespace RenewalWorker
         private async Task CreateNotification(DueSubscriptionDto subscription, bool paymentSucceeded) {
 
             try {
-                var client = httpClientFactory.CreateClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtToken);
+                var client = CreateAutorizedClient();
 
                 var notification = new CreateNotificationDto{
                         
@@ -167,10 +149,9 @@ namespace RenewalWorker
         {
             try
             {
-                var client = httpClientFactory.CreateClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtToken);
+                var client = CreateAutorizedClient();
 
-                var response = await client.PatchAsync($"{apiEndpoints.SubscriptionApi}/subscription/renew/{subscription.Id}",null);
+                var response = await client.PatchAsync($"{apiEndpoints.SubscriptionApi}/subscription/renew/{subscription.Id}", null);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -192,6 +173,36 @@ namespace RenewalWorker
                     "Renewal error for {name}",
                     subscription.Name);
             }
+        }
+
+        // Utilities
+
+        private async Task ProcessSubscription(DueSubscriptionDto subscription)
+        {
+            try
+            {
+                var paymentSuccess = await ProcessPayment(subscription);
+
+                await CreateNotification(subscription, paymentSuccess);
+
+                if (paymentSuccess)
+                {
+                    await RenewSubscription(subscription);
+                    logger.LogInformation("Subscription {subscription} for user {userId} renewed successfully", subscription.Name, subscription.UserId);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed processing subscription {id}", subscription.Id);
+            }
+        }
+
+        private HttpClient CreateAutorizedClient()
+        {
+            var client = httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtToken);
+            return client;
         }
 
         private async Task GetJwtToken() {
@@ -220,5 +231,7 @@ namespace RenewalWorker
                 logger.LogError(ex, "Failed to generate Jwt Token");
             }
         }
+
+        
     }
 }

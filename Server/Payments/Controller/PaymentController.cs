@@ -5,6 +5,7 @@ using Payments.Data;
 using Payments.Dto;
 using Payments.Entity;
 using Payments.Enum;
+using Payments.Interface;
 using System.Security.Claims;
 
 namespace Payments.Controller
@@ -21,24 +22,24 @@ namespace Payments.Controller
             context = _context;
         }
 
-        [HttpPost("process")]
-        [Authorize(Roles = "Worker")]
+        [HttpPost("process")]       
         public async Task<IActionResult> ProcessPayment(ProcessPaymentDto processPaymentDto)
         {
+            var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var payment = new Payment
+            if (!Guid.TryParse(userIdGuid, out var userId))
             {
-                SubscriptionId = processPaymentDto.SubscriptionId,
-                UserId = processPaymentDto.UserId,
-                Amount = processPaymentDto.amount,
-                Status = (PaymentStatus)Random.Shared.Next(0, 4), // PaymentStatus.Completed,
-                TransactionReference = $"TXN-{Guid.NewGuid():N}"
-            };
+                return Unauthorized("Invalid user identifier.");
+            }
 
-            context.Payment.Add(payment);
-            await context.SaveChangesAsync();
+            return await CreatePayment(processPaymentDto, userId);
+        }
 
-            return CreatedAtAction(nameof(GetPayment), new { paymentid = payment.Id }, payment);
+        [HttpPost("processinternal")]
+        [Authorize(Roles = "Worker")]
+        public async Task<IActionResult> ProcessPaymentInternal(WorkerProcessPaymentDto workerProcessPaymentDto)
+        {
+            return await CreatePayment(workerProcessPaymentDto,workerProcessPaymentDto.UserId);
         }
 
         [HttpGet("{paymentid:guid}")]
@@ -112,5 +113,31 @@ namespace Payments.Controller
             return Ok(payments);
         }
 
+        // Utility
+        private async Task<IActionResult> CreatePayment(IProcessPaymentDto processPaymentDto, Guid userId)
+        {
+            var payment = new Payment
+            {
+                SubscriptionId = processPaymentDto.SubscriptionId,
+                UserId = userId,
+                Amount = processPaymentDto.Amount,
+                Status = (PaymentStatus)Random.Shared.Next(0, 4), // PaymentStatus.Completed,
+                TransactionReference = $"TXN-{Guid.NewGuid():N}"
+            };
+
+            context.Payment.Add(payment);
+            await context.SaveChangesAsync();
+
+            PaymentResponseDto paymentResponseDto = new PaymentResponseDto
+            {
+                PaymentId = payment.Id,
+                Status = payment.Status,
+                TransactionReference = payment.TransactionReference,
+                Amount = payment.Amount,
+                SubscriptionId = payment.SubscriptionId
+            };
+
+            return Ok(paymentResponseDto);
+        }
     }
 }
