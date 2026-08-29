@@ -17,13 +17,11 @@ namespace Notifications.Controllers
         public NotificationController(NotificationDbContext _context) { 
                 context = _context;
         }
-
-        [AllowAnonymous]
+       
         [HttpPost("create")]
-        //[Authorize(Roles = "Worker")]
+        [Authorize(Roles = "Worker")]
         public async Task<IActionResult> CreateNotification(CreateNotificationDto createNotificationDto) {
-
-            // will get the userid from subscription table
+            
             Notification notification = new Notification { 
                 
                 UserId = createNotificationDto.UserId,

@@ -14,6 +14,11 @@ builder.Services.Configure<ApiEndpoints>(
     builder.Configuration.GetSection("ApiEndpoints")
 );
 
+// Register Worker Credientials
+builder.Services.Configure<WorkerCredientials>(
+    builder.Configuration.GetSection("WorkerCred")
+);
+
 var app = builder.Build();
 
 app.Run();

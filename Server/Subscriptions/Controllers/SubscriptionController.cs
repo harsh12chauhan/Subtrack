@@ -190,10 +190,9 @@ namespace Subscriptions.Controllers
 
             return Ok("Subscription deleted.");
         }
-
-        [AllowAnonymous]
+        
         [HttpPatch("renew/{subscriptionid:guid}")]
-        //[Authorize(Roles = "Worker")]
+        [Authorize(Roles = "Worker")]
         public async Task<IActionResult> RenewSubscription(Guid subscriptionid)
         {
             var subscription = await context.Subscription.FindAsync(subscriptionid);
@@ -235,10 +234,9 @@ namespace Subscriptions.Controllers
                 nextBillingDate = subscription.NextBillingDate
             });
         }
-
-        [AllowAnonymous]
+        
         [HttpGet("due")]
-        //[Authorize(Roles = "Worker")]
+        [Authorize(Roles = "Worker")]
         public async Task<IActionResult> GetUserDueSubscriptions()
         {            
             var today = DateTime.UtcNow.Date;

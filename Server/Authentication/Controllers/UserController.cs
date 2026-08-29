@@ -73,7 +73,7 @@ namespace Authentication.Controllers
             // Generate Jwt token
             string token = CreateJwtToken(user);
 
-            return Ok(token);
+            return Ok(new{token}); // returning in JSON format
         }
 
         [HttpGet("home")]

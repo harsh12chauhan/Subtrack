@@ -21,16 +21,10 @@ namespace Payments.Controller
             context = _context;
         }
 
-        [AllowAnonymous]
         [HttpPost("process")]
+        [Authorize(Roles = "Worker")]
         public async Task<IActionResult> ProcessPayment(ProcessPaymentDto processPaymentDto)
         {
-            //var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            //if (!Guid.TryParse(userIdGuid, out var userId))
-            //{
-            //    return Unauthorized("Invalid user identifier.");
-            //}
 
             var payment = new Payment
             {

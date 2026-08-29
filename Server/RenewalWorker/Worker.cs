@@ -1,24 +1,31 @@
 ﻿using Microsoft.Extensions.Options;
 using RenewalWorker.Configuration;
 using RenewalWorker.Dto;
+using System.ComponentModel.DataAnnotations;
+using System.Net.Http.Headers;
 
 namespace RenewalWorker
 {
     public class Worker: BackgroundService
     {
+        private readonly WorkerCredientials workerCredientials;
         private readonly ApiEndpoints apiEndpoints;
         private readonly ILogger<Worker> logger;
         private readonly IHttpClientFactory httpClientFactory;
 
+        private string? JwtToken;
+
         public Worker(
             ILogger<Worker> logger,
             IHttpClientFactory httpClientFactory,
-            IOptions<ApiEndpoints> options
+            IOptions<WorkerCredientials> workerCredientialsOptions,
+            IOptions<ApiEndpoints> apiEndpointsOptions
             )
         {
             this.logger = logger;
             this.httpClientFactory = httpClientFactory;
-            this.apiEndpoints = options.Value;
+            this.apiEndpoints = apiEndpointsOptions.Value;
+            this.workerCredientials = workerCredientialsOptions.Value;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -26,6 +33,7 @@ namespace RenewalWorker
 
             while (!stoppingToken.IsCancellationRequested)
             {
+                await GetJwtToken();
 
                 await GetDueSubscriptions();  
                 
@@ -39,29 +47,38 @@ namespace RenewalWorker
 
         private async Task GetDueSubscriptions() {
 
-            var client = httpClientFactory.CreateClient();
-
-            var response = await client.GetAsync($"{apiEndpoints.SubscriptionApi}/subscription/due");
-
-            response.EnsureSuccessStatusCode();
-
-            var subscriptions = await response.Content.ReadFromJsonAsync<List<DueSubscriptionDto>>();
-
-            logger.LogInformation("Found {Count} due subscriptions", subscriptions?.Count ?? 0);
-   
-            foreach (var subscription in subscriptions ?? [])
+            try
             {
-                logger.LogInformation("Subscription: {name} Amount: {amount}", subscription.Name,subscription.Amount);
+                var client = httpClientFactory.CreateClient();
 
-                var paymentSuccess = await ProcessPayment(subscription);
-                
-                await CreateNotification(subscription,paymentSuccess);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtToken);
 
-                if (paymentSuccess)
+                var response = await client.GetAsync($"{apiEndpoints.SubscriptionApi}/subscription/due");
+
+                response.EnsureSuccessStatusCode();
+
+                var subscriptions = await response.Content.ReadFromJsonAsync<List<DueSubscriptionDto>>();
+
+                logger.LogInformation("Found {Count} due subscriptions", subscriptions?.Count ?? 0);
+
+                foreach (var subscription in subscriptions ?? [])
                 {
-                    await RenewSubscription(subscription);
-                }
+                    logger.LogInformation("Subscription: {name} Amount: {amount}", subscription.Name, subscription.Amount);
 
+                    var paymentSuccess = await ProcessPayment(subscription);
+
+                    await CreateNotification(subscription, paymentSuccess);
+
+                    if (paymentSuccess)
+                    {
+                        await RenewSubscription(subscription);
+                        logger.LogInformation("Subscription {subscription} for user {userId} renewed successfully", subscription.Name, subscription.UserId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Internal Server Error Occured at worker");
             }
         }
 
@@ -70,6 +87,7 @@ namespace RenewalWorker
             try
             {
                 var client = httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtToken);
 
                 var paymentRequest = new CreatePaymentDto
                 {
@@ -101,7 +119,8 @@ namespace RenewalWorker
 
             try {
                 var client = httpClientFactory.CreateClient();
-                
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtToken);
+
                 var notification = new CreateNotificationDto{
                         
                     UserId = subscription.UserId,
@@ -138,6 +157,7 @@ namespace RenewalWorker
             try
             {
                 var client = httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtToken);
 
                 var response = await client.PatchAsync($"{apiEndpoints.SubscriptionApi}/subscription/renew/{subscription.Id}",null);
 
@@ -163,5 +183,31 @@ namespace RenewalWorker
             }
         }
 
+        private async Task GetJwtToken() {
+
+            var client = httpClientFactory.CreateClient();
+
+
+            var loginRequest = new LoginDto
+            {
+                Email = workerCredientials.Email,
+                Password = workerCredientials.Password
+            };
+
+            var response = await client.PostAsJsonAsync($"{apiEndpoints.AuthApi}/auth/login",loginRequest);
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            logger.LogInformation(
+                "Auth Response: {content}",
+                content);
+
+            var authResponseDto = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+
+            JwtToken = authResponseDto?.Token;
+
+        }
     }
 }
