@@ -19,10 +19,10 @@ namespace Authentication.Controllers
     {
         private readonly UserDbContext context;
         private readonly IConfiguration configuration;
-        public UserController(UserDbContext _context, IConfiguration _configuration  )
+        public UserController(UserDbContext _context, IConfiguration _configuration)
         {
             context = _context;
-           configuration = _configuration;
+            configuration = _configuration;
         }
 
         [HttpPost("register")]
@@ -45,7 +45,7 @@ namespace Authentication.Controllers
             };
 
             newUser.PasswordHash = new PasswordHasher<User>().HashPassword(newUser, userRegisterDto.Password);
-            
+
             context.Add(newUser);
             await context.SaveChangesAsync();
 
@@ -73,7 +73,11 @@ namespace Authentication.Controllers
             // Generate Jwt token
             string token = CreateJwtToken(user);
 
-            return Ok(new{token}); // returning in JSON format
+            //return Ok(token); // returning in token as string format
+            return Ok(new
+            {
+                token
+            }); // returning in JSON format
         }
 
         [HttpGet("home")]
@@ -82,28 +86,47 @@ namespace Authentication.Controllers
         {
             return Ok("Welcome to the home page");
         }
-        
+
         [HttpGet("admin")]
         [Authorize(Roles = "Admin")]
         public IActionResult Admin()
         {
             return Ok("Welcome to the admin page");
         }
-        private string CreateJwtToken(User user) {
+        private string CreateJwtToken(User user)
+        {
 
-            var claim = new List<Claim>
+            var claim = new List<Claim>{
+                        new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
+                        new Claim(ClaimTypes.Role,user.Role.ToString())
+                    };
+
+            // Validate configuration values to avoid passing null into Encoding.GetBytes
+            var securityKey = configuration.GetValue<string>("TokenDetail:SecurityKey");
+            if (string.IsNullOrWhiteSpace(securityKey))
             {
-                new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
-                new Claim(ClaimTypes.Role,user.Role.ToString())
-            };
+                throw new InvalidOperationException("Configuration value 'TokenDetail:SecurityKey' is missing or empty.");
+            }
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("TokenDetail:SecurityKey")));
+            var issuer = configuration.GetValue<string>("TokenDetail:Issuer");
+            if (string.IsNullOrWhiteSpace(issuer))
+            {
+                throw new InvalidOperationException("Configuration value 'TokenDetail:Issuer' is missing or empty.");
+            }
 
-            var creds = new SigningCredentials(key,SecurityAlgorithms.HmacSha256Signature);
+            var audience = configuration.GetValue<string>("TokenDetail:Audience");
+            if (string.IsNullOrWhiteSpace(audience))
+            {
+                throw new InvalidOperationException("Configuration value 'TokenDetail:Audience' is missing or empty.");
+            }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 
             var tokenDescriptor = new JwtSecurityToken(
-                issuer: configuration.GetValue<string>("TokenDetail:Issuer"),
-                audience: configuration.GetValue<string>("TokenDetail:Audience"),
+                issuer: issuer,
+                audience: audience,
                 claims: claim,
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: creds

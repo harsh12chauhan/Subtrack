@@ -51,7 +51,7 @@ namespace Notifications.Controllers
             var notifications = await context.Notification
                                 .AsNoTracking()
                                 .Where(x => x.UserId == userId)
-                                .OrderBy(x => x.CreatedAt)
+                                .OrderByDescending(x => x.CreatedAt)
                                 .ToListAsync();
 
             return Ok(notifications);

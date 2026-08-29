@@ -13,7 +13,7 @@ namespace RenewalWorker
         private readonly ILogger<Worker> logger;
         private readonly IHttpClientFactory httpClientFactory;
 
-        private string? JwtToken;
+        private string? JwtToken;        
 
         public Worker(
             ILogger<Worker> logger,
@@ -32,13 +32,18 @@ namespace RenewalWorker
         {            
 
             while (!stoppingToken.IsCancellationRequested)
-            {
+            {                
                 await GetJwtToken();
+
+                logger.LogInformation(
+    "Token Retrieved: {token}",
+    JwtToken?.Substring(0, 20)
+);
 
                 await GetDueSubscriptions();  
                 
                 await Task.Delay(
-                    TimeSpan.FromSeconds(15),
+                    TimeSpan.FromSeconds(30),
                     stoppingToken
                 );
 
@@ -50,11 +55,9 @@ namespace RenewalWorker
             try
             {
                 var client = httpClientFactory.CreateClient();
-
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtToken);
 
                 var response = await client.GetAsync($"{apiEndpoints.SubscriptionApi}/subscription/due");
-
                 response.EnsureSuccessStatusCode();
 
                 var subscriptions = await response.Content.ReadFromJsonAsync<List<DueSubscriptionDto>>();
@@ -65,14 +68,22 @@ namespace RenewalWorker
                 {
                     logger.LogInformation("Subscription: {name} Amount: {amount}", subscription.Name, subscription.Amount);
 
-                    var paymentSuccess = await ProcessPayment(subscription);
-
-                    await CreateNotification(subscription, paymentSuccess);
-
-                    if (paymentSuccess)
+                    try
                     {
-                        await RenewSubscription(subscription);
-                        logger.LogInformation("Subscription {subscription} for user {userId} renewed successfully", subscription.Name, subscription.UserId);
+                        var paymentSuccess = await ProcessPayment(subscription);                    
+
+                        await CreateNotification(subscription, paymentSuccess);
+
+                        if (paymentSuccess)
+                        {
+                            await RenewSubscription(subscription);
+                            logger.LogInformation("Subscription {subscription} for user {userId} renewed successfully", subscription.Name, subscription.UserId);
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Failed processing subscription {id}", subscription.Id);
                     }
                 }
             }
@@ -185,29 +196,29 @@ namespace RenewalWorker
 
         private async Task GetJwtToken() {
 
-            var client = httpClientFactory.CreateClient();
-
-
-            var loginRequest = new LoginDto
+            try
             {
-                Email = workerCredientials.Email,
-                Password = workerCredientials.Password
-            };
+                var client = httpClientFactory.CreateClient();
 
-            var response = await client.PostAsJsonAsync($"{apiEndpoints.AuthApi}/auth/login",loginRequest);
+                var loginRequest = new LoginDto
+                {
+                    Email = workerCredientials.Email,
+                    Password = workerCredientials.Password
+                };
 
-            response.EnsureSuccessStatusCode();
+                var response = await client.PostAsJsonAsync($"{apiEndpoints.AuthApi}/auth/login", loginRequest);
 
-            var content = await response.Content.ReadAsStringAsync();
+                response.EnsureSuccessStatusCode();
+                
+                var authResponseDto = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
 
-            logger.LogInformation(
-                "Auth Response: {content}",
-                content);
+                JwtToken = authResponseDto?.Token;
 
-            var authResponseDto = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
-
-            JwtToken = authResponseDto?.Token;
-
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to generate Jwt Token");
+            }
         }
     }
 }
