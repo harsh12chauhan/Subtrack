@@ -1,6 +1,6 @@
 export interface CreatePayment{
     subscriptionId:string;
-    subscriptionAmount: number;
+    Amount: number;
 }
 
 export interface Payment {

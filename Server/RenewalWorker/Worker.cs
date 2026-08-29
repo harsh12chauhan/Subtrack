@@ -1,19 +1,19 @@
 ﻿using Microsoft.Extensions.Options;
+using Payments.Enum;
 using RenewalWorker.Configuration;
 using RenewalWorker.Dto;
-using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
 
 namespace RenewalWorker
 {
-    public class Worker: BackgroundService
+    public class Worker : BackgroundService
     {
         private readonly WorkerCredientials workerCredientials;
         private readonly ApiEndpoints apiEndpoints;
         private readonly ILogger<Worker> logger;
         private readonly IHttpClientFactory httpClientFactory;
 
-        private string? JwtToken;        
+        private string? JwtToken;
 
         public Worker(
             ILogger<Worker> logger,
@@ -29,17 +29,17 @@ namespace RenewalWorker
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {            
+        {
 
             while (!stoppingToken.IsCancellationRequested)
-            {                                
+            {
                 if (string.IsNullOrEmpty(JwtToken))
                 {
                     await GetJwtToken();
                 }
 
-                await GetDueSubscriptions();  
-                
+                await GetDueSubscriptions();
+
                 await Task.Delay(
                     TimeSpan.FromSeconds(30),
                     stoppingToken
@@ -48,7 +48,8 @@ namespace RenewalWorker
             }
         }
 
-        private async Task GetDueSubscriptions() {
+        private async Task GetDueSubscriptions()
+        {
 
             try
             {
@@ -63,8 +64,7 @@ namespace RenewalWorker
 
                 foreach (var subscription in subscriptions ?? [])
                 {
-                    logger.LogInformation("Processing subscription {name} ({subscriptionId}) for user {userId}",subscription.Name,subscription.Id,subscription.UserId);
-                    logger.LogInformation("Started processing subscription {id}",subscription.Id);
+                    logger.LogInformation("Processing subscription {name} ({subscriptionId}) for user {userId}", subscription.Name, subscription.Id, subscription.UserId);
 
                     await ProcessSubscription(subscription);
 
@@ -77,7 +77,31 @@ namespace RenewalWorker
             }
         }
 
-        private async Task<bool> ProcessPayment(DueSubscriptionDto subscription) {
+        // Extracted Method
+        private async Task ProcessSubscription(DueSubscriptionDto subscription)
+        {
+            try
+            {
+                var paymentSuccess = await ProcessPayment(subscription);
+
+                await CreateNotification(subscription, paymentSuccess);
+
+                if (paymentSuccess)
+                {
+                    await RenewSubscription(subscription);
+                    logger.LogInformation("Subscription {subscription} for user {userId} renewed successfully", subscription.Name, subscription.UserId);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed processing subscription {id}", subscription.Id);
+            }
+        }
+
+
+        private async Task<bool> ProcessPayment(DueSubscriptionDto subscription)
+        {
 
             try
             {
@@ -92,37 +116,45 @@ namespace RenewalWorker
 
                 var response = await client.PostAsJsonAsync($"{apiEndpoints.PaymentApi}/payment/processinternal", paymentRequest);
 
-                if (response.IsSuccessStatusCode)
+                response.EnsureSuccessStatusCode();
+
+                var paymentResponse = await response.Content.ReadFromJsonAsync<PaymentResponseDto>();
+
+                if (paymentResponse is null)
                 {
-                    logger.LogInformation("Payment created for {subscription}", subscription.Name);
-                    return true;
-                }
-                else
-                {
-                    logger.LogError("Payment failed for {subscription}", subscription.Name);
+                    logger.LogError("Payment response was null for {subscription}",subscription.Name);
+
                     return false;
                 }
+
+                logger.LogInformation("Payment {paymentId} for subscription {subscription} returned status {status}",paymentResponse.PaymentId,subscription.Name,paymentResponse.Status);
+
+                return paymentResponse.Status == PaymentStatus.Completed;
             }
-            catch (Exception ex){
-                logger.LogError(ex,"Error processing payment for {subscription}", subscription.Name);
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error processing payment for {subscription}", subscription.Name);
                 return false;
             }
         }
 
-        private async Task CreateNotification(DueSubscriptionDto subscription, bool paymentSucceeded) {
+        private async Task CreateNotification(DueSubscriptionDto subscription, bool paymentSucceeded)
+        {
 
-            try {
+            try
+            {
                 var client = CreateAutorizedClient();
 
-                var notification = new CreateNotificationDto{
-                        
+                var notification = new CreateNotificationDto
+                {
+
                     UserId = subscription.UserId,
-                    Title = paymentSucceeded ? "Payment Successful": "Payment Failed",
-                    Message = paymentSucceeded? $"{subscription.Name} renewed successfully.": $"{subscription.Name} payment failed.",
+                    Title = paymentSucceeded ? "Payment Successful" : "Payment Failed",
+                    Message = paymentSucceeded ? $"{subscription.Name} renewed successfully." : $"{subscription.Name} payment failed.",
                     Type = paymentSucceeded ? 1 : 2
                 };
 
-                var response = await client.PostAsJsonAsync($"{apiEndpoints.NotificationApi}/notification/create",notification);
+                var response = await client.PostAsJsonAsync($"{apiEndpoints.NotificationApi}/notification/create", notification);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -139,8 +171,9 @@ namespace RenewalWorker
 
 
             }
-            catch (Exception ex) {
-                logger.LogError(ex,"Notification error for {subscription}",subscription.Name);
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Notification error for {subscription}", subscription.Name);
             }
 
         }
@@ -174,30 +207,9 @@ namespace RenewalWorker
                     subscription.Name);
             }
         }
+      
 
-        // Utilities
-
-        private async Task ProcessSubscription(DueSubscriptionDto subscription)
-        {
-            try
-            {
-                var paymentSuccess = await ProcessPayment(subscription);
-
-                await CreateNotification(subscription, paymentSuccess);
-
-                if (paymentSuccess)
-                {
-                    await RenewSubscription(subscription);
-                    logger.LogInformation("Subscription {subscription} for user {userId} renewed successfully", subscription.Name, subscription.UserId);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Failed processing subscription {id}", subscription.Id);
-            }
-        }
-
+        //Extracted Method
         private HttpClient CreateAutorizedClient()
         {
             var client = httpClientFactory.CreateClient();
@@ -205,7 +217,8 @@ namespace RenewalWorker
             return client;
         }
 
-        private async Task GetJwtToken() {
+        private async Task GetJwtToken()
+        {
 
             try
             {
@@ -220,7 +233,7 @@ namespace RenewalWorker
                 var response = await client.PostAsJsonAsync($"{apiEndpoints.AuthApi}/auth/login", loginRequest);
 
                 response.EnsureSuccessStatusCode();
-                
+
                 var authResponseDto = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
 
                 JwtToken = authResponseDto?.Token;
@@ -232,6 +245,6 @@ namespace RenewalWorker
             }
         }
 
-        
+
     }
 }

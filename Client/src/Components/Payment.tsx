@@ -21,6 +21,13 @@ const Payment = () => {
 
   useEffect(() => {
     loadPayments();
+
+    const intervalId = setInterval(() => {
+                              loadPayments();
+                            }, 5000);
+                          
+    return () => clearInterval(intervalId);
+
   }, []);
 
   if (loading) {

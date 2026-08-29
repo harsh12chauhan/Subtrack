@@ -10,6 +10,7 @@ namespace Notifications.Controllers
 {
     [ApiController]
     [Route("notification")]
+    [Authorize]
     public class NotificationController: ControllerBase
     {
         private readonly NotificationDbContext context;

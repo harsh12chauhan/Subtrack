@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { notificationService } from "../Services/Notification/notificationService";
 
 const Sidebar = () => {
     
@@ -27,10 +29,36 @@ const Sidebar = () => {
     },
   ];
 
+  const [unreadCount, setUnreadCount] = useState(0);
+  
   const logout = () => {
     localStorage.removeItem("accessToken");
     navigator("/");
   }
+
+  const loadUnreadCount = async () => {
+    try {
+      const count = await notificationService.GetUnreadNotificationCount();
+      setUnreadCount(count);
+      console.log(count);
+      
+      
+    }
+    catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    loadUnreadCount();
+
+    const intervalId = setInterval(() => {
+                          loadUnreadCount();
+                        }, 5000); // 30 seconds
+
+    return () => clearInterval(intervalId);
+
+  }, []);
 
   return (
     <aside className="w-64 h-screen bg-slate-900 text-white p-5">
@@ -50,7 +78,18 @@ const Sidebar = () => {
                     : "hover:bg-slate-800"
                 }`}
               >
-                {item.name}
+                {/* {item.name} */}
+                <div className="flex items-center justify-between">
+                  <span>{item.name}</span>                  
+                  {
+                    item.name === "Notifications" && unreadCount > 0 && 
+                    ( 
+                      <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full min-w-[24px] text-center">
+                        {unreadCount}
+                      </span>
+                    )
+                  }
+                </div>
               </Link>
             </li>
           ))}

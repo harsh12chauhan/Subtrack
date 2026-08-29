@@ -236,7 +236,7 @@ namespace Subscriptions.Controllers
         }
         
         [HttpGet("due")]
-        [Authorize(Roles = "Worker")]
+        [Authorize(Roles = "Worker,Admin")]
         public async Task<IActionResult> GetUserDueSubscriptions()
         {            
             var today = DateTime.UtcNow.Date;

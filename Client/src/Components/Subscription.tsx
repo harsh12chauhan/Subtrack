@@ -212,7 +212,7 @@ const Subscription = () => {
                 </button>
 
                 <button
-                  onClick={() => handlePayment({subscriptionId: subscription.id, subscriptionAmount: subscription.amount })}
+                  onClick={() => handlePayment({subscriptionId: subscription.id, Amount: subscription.amount })}
                   className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded cursor-pointer"
                 >
                   Pay
