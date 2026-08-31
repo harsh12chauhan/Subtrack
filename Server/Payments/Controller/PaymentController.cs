@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Payments.Data;
 using Payments.Dto;
-using Payments.Entity;
-using Payments.Enum;
 using Payments.Interface;
 using System.Security.Claims;
 
@@ -15,129 +11,82 @@ namespace Payments.Controller
     [Authorize]
     public class PaymentController : ControllerBase
     {
-        private readonly PaymentDbContext context;
+        private readonly IPaymentService paymentService;
 
-        public PaymentController(PaymentDbContext _context)
+        public PaymentController(IPaymentService _paymentService)
         {
-            context = _context;
+            paymentService = _paymentService;
         }
 
-        [HttpPost("process")]       
+        [HttpPost("process")]
         public async Task<IActionResult> ProcessPayment(ProcessPaymentDto processPaymentDto)
         {
-            var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId = GetCurrentUserId();
 
-            if (!Guid.TryParse(userIdGuid, out var userId))
-            {
-                return Unauthorized("Invalid user identifier.");
-            }
+            var response = await paymentService.CreatePayment(processPaymentDto, userId);
 
-            return await CreatePayment(processPaymentDto, userId);
+            return Ok(response);
         }
 
         [HttpPost("processinternal")]
         [Authorize(Roles = "Worker")]
         public async Task<IActionResult> ProcessPaymentInternal(WorkerProcessPaymentDto workerProcessPaymentDto)
         {
-            return await CreatePayment(workerProcessPaymentDto,workerProcessPaymentDto.UserId);
+            var response = await paymentService.CreatePayment(workerProcessPaymentDto, workerProcessPaymentDto.UserId);
+            return Ok(response);
         }
 
         [HttpGet("{paymentid:guid}")]
-        public async Task<IActionResult> GetPayment(Guid paymentid)
+        public async Task<IActionResult> PaymentByPaymentId(Guid paymentid)
         {
-            var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId = GetCurrentUserId();
 
-            if (!Guid.TryParse(userIdGuid, out var userId))
-            {
-                return Unauthorized("Invalid user identifier.");
-            }
+            var response = await paymentService.GetPaymentByPaymentId(paymentid, userId);
 
-            // Ensure the payment belongs to the authenticated user.
-            var payment = await context.Payment.AsNoTracking().FirstOrDefaultAsync(x => x.Id == paymentid && x.UserId == userId);
-
-            if (payment is null)
-            {
-                return NotFound("Payment not found.");
-            }
-
-            return Ok(payment);
+            return Ok(response);
         }
 
         [HttpGet("subscription/{subscriptionId:guid}")]
-        public async Task<IActionResult> GetPaymentBySubscriptionId(Guid subscriptionId)
+        public async Task<IActionResult> PaymentsBySubscriptionId(Guid subscriptionId)
         {
-            var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId = GetCurrentUserId();
 
-            if (!Guid.TryParse(userIdGuid, out var userId))
-            {
-                return Unauthorized("Invalid user identifier.");
-            }
+            var response = await paymentService.GetPaymentsBySubscriptionId(subscriptionId, userId);
 
-            var payments = await context.Payment
-                .AsNoTracking()
-                .Where(x => x.SubscriptionId == subscriptionId && x.UserId == userId)
-                .OrderByDescending(x => x.PaymentDate)
-                .ToListAsync();
-
-            return Ok(payments);
+            return Ok(response);
         }
 
         [HttpGet("transactions")]
-        public async Task<IActionResult> GetUserPaymentHistory()
+        public async Task<IActionResult> UserPaymentTransactions()
         {
-            var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId = GetCurrentUserId();
 
-            if (!Guid.TryParse(userIdGuid, out var userId))
-            {
-                return Unauthorized("Invalid user identifier.");
-            }
+            var response = await paymentService.GetUserPaymentTransactions(userId);
 
-            var payments = await context.Payment
-                .AsNoTracking()
-                .Where(x => x.UserId == userId)
-                .OrderByDescending(x => x.PaymentDate)
-                .ToListAsync();
-
-            return Ok(payments);
+            return Ok(response);
         }
 
         [HttpGet("all")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAllPaymentTransactions()
+        public async Task<IActionResult> AllPaymentTransactions()
         {
-            var payments = await context.Payment
-                .AsNoTracking()
-                .OrderByDescending(x => x.PaymentDate)
-                .ToListAsync();
+            var response = await paymentService.GetAllPaymentTransactions();
 
-            return Ok(payments);
+            return Ok(response);
         }
 
         // Utility
-        private async Task<IActionResult> CreatePayment(IProcessPaymentDto processPaymentDto, Guid userId)
-        {
-            var payment = new Payment
+        private Guid GetCurrentUserId(){
+
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!Guid.TryParse(userIdString, out var userId))
             {
-                SubscriptionId = processPaymentDto.SubscriptionId,
-                UserId = userId,
-                Amount = processPaymentDto.Amount,
-                Status = (PaymentStatus)Random.Shared.Next(0, 4), // PaymentStatus.Completed,
-                TransactionReference = $"TXN-{Guid.NewGuid():N}"
-            };
-
-            context.Payment.Add(payment);
-            await context.SaveChangesAsync();
-
-            PaymentResponseDto paymentResponseDto = new PaymentResponseDto
-            {
-                PaymentId = payment.Id,
-                Status = payment.Status,
-                TransactionReference = payment.TransactionReference,
-                Amount = payment.Amount,
-                SubscriptionId = payment.SubscriptionId
-            };
-
-            return Ok(paymentResponseDto);
+                throw new UnauthorizedAccessException("Invalid user identifier.");
+            }
+            // return userId converted to guid from string
+            return userId;
         }
+
     }
 }
