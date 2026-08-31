@@ -5,6 +5,8 @@ using Subscriptions.Data;
 using Subscriptions.Dto;
 using Subscriptions.Entities;
 using Subscriptions.Enum;
+using Subscriptions.Interfaces;
+using System.Net.NetworkInformation;
 using System.Security.Claims;
 
 namespace Subscriptions.Controllers
@@ -14,267 +16,124 @@ namespace Subscriptions.Controllers
     [Authorize]
     public class SubscriptionController : ControllerBase
     {        
-        private readonly SubscriptionDbContext context;
-        public SubscriptionController(SubscriptionDbContext _context)
+        private readonly ISubscriptionService subscriptionService;
+        public SubscriptionController(ISubscriptionService _subscriptionService)
         {
-            context = _context;
+            subscriptionService = _subscriptionService;
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateSubscription(CreateSubscriptionDto createSubscriptionDto)
+        public async Task<IActionResult> NewSubscription(CreateSubscriptionDto createSubscriptionDto)
         {
-            var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId = GetCurrentUserId();
 
-            if (!Guid.TryParse(userIdGuid, out var userId))
-            {
-                return Unauthorized("Invalid user identifier.");
-            }
+            var response = await subscriptionService.CreateSubscription(createSubscriptionDto,userId);
 
-            var IsSubscriptionExists = await context.Subscription
-                                            .AnyAsync(x =>
-                                                x.UserId == userId &&
-                                                x.Name == createSubscriptionDto.Name &&
-                                                x.Category == createSubscriptionDto.Category);
-
-            if (IsSubscriptionExists)
-            {
-                return NotFound("Subscription already exist's.");
-            }
-
-            var subscription = new Subscription
-            {
-                UserId = userId,
-                Name = createSubscriptionDto.Name,
-                Amount = createSubscriptionDto.Amount,
-                Category = createSubscriptionDto.Category,
-                BillingCycle = createSubscriptionDto.BillingCycle,
-                NextBillingDate = createSubscriptionDto.NextBillingDate
-            };
-
-            context.Subscription.Add(subscription);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetSubscription), new { subscriptionid = subscription.Id }, subscription);
+            return Ok(response);
         }
             
         [HttpPatch("update/{subscriptionid:guid}")]
         public async Task<IActionResult> UpdateSubscription(Guid subscriptionid ,UpdateSubscriptionDto updateSubscriptionDto)
         {
-            var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId = GetCurrentUserId();
 
-            if (!Guid.TryParse(userIdGuid, out var userId))
-            {
-                return Unauthorized("Invalid user identifier.");
-            }
+            var response = await subscriptionService.UpdateSubscription(subscriptionid, updateSubscriptionDto, userId);
 
-            // Ensure the subscription belongs to the authenticated user.
-            var subscription = await context.Subscription.FirstOrDefaultAsync(x => x.Id == subscriptionid && x.UserId == userId);            
-
-            if (subscription is null)
-            {
-                return NotFound("Subscription not found!");
-            }
-          
-            subscription.Name = !string.IsNullOrWhiteSpace(updateSubscriptionDto.Name) ? updateSubscriptionDto.Name: subscription.Name;
-            subscription.Amount = updateSubscriptionDto.Amount ?? subscription.Amount;
-            subscription.Category = updateSubscriptionDto.Category ?? subscription.Category;
-            subscription.BillingCycle = updateSubscriptionDto.BillingCycle ?? subscription.BillingCycle;
-            subscription.NextBillingDate = updateSubscriptionDto.NextBillingDate ?? subscription.NextBillingDate;
-
-            context.Subscription.Update(subscription);
-            await context.SaveChangesAsync();
-
-            return Ok(subscription);
+            return Ok(response);
         }
 
         [HttpGet("all")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAllSubscriptions()
+        public async Task<IActionResult> AllSubscriptions()
         {
-            var allSubscriptions = await context.Subscription.AsNoTracking().ToListAsync();
+            var response = await subscriptionService.GetAllSubscriptions();
 
-            return Ok(allSubscriptions);
+            return Ok(response);
         }
 
         [HttpGet("{subscriptionid:guid}")]
-        public async Task<IActionResult> GetSubscription(Guid subscriptionid)
+        public async Task<IActionResult> SubscriptionById(Guid subscriptionid)
         {
-            var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetCurrentUserId();
 
-            if (!Guid.TryParse(userIdGuid, out var userId))
-            {
-                return Unauthorized("Invalid user identifier.");
-            }
+            var response = await subscriptionService.GetSubscription(subscriptionid, userId);
 
-            // Ensure the subscription belongs to the authenticated user.
-            var subscription = await context.Subscription
-                                .AsNoTracking() // used to increase speed
-                                .FirstOrDefaultAsync(x => x.Id == subscriptionid && x.UserId == userId);            
-
-            if (subscription is null)
-            {
-                return NotFound("Subscription not found!");
-            }
-            return Ok(subscription);
+            return Ok(response);
         }
 
         [HttpGet("user-subscription")]
-        public async Task<IActionResult> GetUserSubscriptions()
+        public async Task<IActionResult> UserSubscriptions()
         {
-            var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
-            if (!Guid.TryParse(userIdGuid,out var userId)) {
+            var userId = GetCurrentUserId();
 
-                return Unauthorized("Invalid user identifier.");
-            }
+            var response = await subscriptionService.GetUserSubscriptions(userId);
 
-            var subscriptions = await context.Subscription
-                                    .AsNoTracking() // used to increase speed
-                                    .Where(x => x.UserId == userId && x.Status != BillingStatus.Cancelled)
-                                    .OrderBy(x => x.NextBillingDate)
-                                    .ToListAsync();
-
-            return Ok(subscriptions);
+            return Ok(response);
         }
 
         [HttpPut("status/{subscriptionid:guid}/{status}")]
         public async Task<IActionResult> UpdateSubscriptionStatus(Guid subscriptionid, BillingStatus status)
         {
-            var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetCurrentUserId();
 
-            if (!Guid.TryParse(userIdGuid, out var userId))
-            {
-                return Unauthorized("Invalid user identifier.");
-            }
+            var response = await subscriptionService.UpdateSubscriptionStatus(subscriptionid, status, userId);
 
-            // Ensure the subscription belongs to the authenticated user.
-            var subscription = await context.Subscription.FirstOrDefaultAsync(x => x.Id == subscriptionid && x.UserId == userId);
-
-            if (subscription is null)
-            {
-                return NotFound("Subscription not found!");
-            }
-
-            if (subscription.Status == status) 
-            {
-                return Ok($"Status is already {status}");
-            }
-
-            // validating enum values
-            if (!System.Enum.IsDefined(typeof(BillingStatus), status))
-            {
-                return BadRequest("Invalid status.");
-            }
-
-
-            subscription.Status = status;
-            
-            await context.SaveChangesAsync();
-
-            return Ok($"Subscription status updated to {status}.");
+            return Ok(response);
         }
 
         [HttpDelete("{subscriptionid:guid}")]
         [Authorize(Roles ="Admin")]
         public async Task<IActionResult> DeleteSubscription(Guid subscriptionid)
-        {
-            var subscription = await context.Subscription.FindAsync(subscriptionid);
+        {            
 
-            if (subscription is null)
-            {
-                return NotFound("Subscription not found!");
-            }
+            var response = await subscriptionService.DeleteSubscription(subscriptionid);
 
-            context.Subscription.Remove(subscription);
-            await context.SaveChangesAsync();
-
-            return Ok("Subscription deleted.");
+            return Ok(response);
         }
         
         [HttpPatch("renew/{subscriptionid:guid}")]
         [Authorize(Roles = "Worker")]
         public async Task<IActionResult> RenewSubscription(Guid subscriptionid)
         {
-            var subscription = await context.Subscription.FindAsync(subscriptionid);
 
-            if (subscription is null)
-            {
-                return NotFound("Subscription not found!");
-            }
+            var response = await subscriptionService.RenewSubscription(subscriptionid);
 
-            if (subscription.Status == BillingStatus.Cancelled)
-            {
-                return BadRequest("Cancelled subscriptions cannot be renewed.");
-            }
+            return Ok(response);
 
-            if (subscription.Status != BillingStatus.Active)
-            {
-                return BadRequest("Only active subscriptions can be renewed.");
-            }
-
-            switch (subscription.BillingCycle)
-            {
-                case BillingCycle.Monthly:
-                    subscription.NextBillingDate = subscription.NextBillingDate.AddMonths(1);
-                    break;
-
-                case BillingCycle.Yearly:
-                    subscription.NextBillingDate = subscription.NextBillingDate.AddYears(1);
-                    break;
-
-                default:
-                    return BadRequest("Invalid billing cycle.");
-            }
-
-            await context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                message = "Subscription renewed.",
-                nextBillingDate = subscription.NextBillingDate
-            });
+            //return Ok(new
+            //{
+            //    message = "Subscription renewed.",
+            //    nextBillingDate = subscription.NextBillingDate
+            //});
         }
         
         [HttpGet("due")]
         [Authorize(Roles = "Worker,Admin")]
         public async Task<IActionResult> GetUserDueSubscriptions()
-        {            
-            var today = DateTime.UtcNow.Date;
-
-            var subscriptions = await context.Subscription
-                                .AsNoTracking()
-                                .Where(x =>
-                                    x.Status == BillingStatus.Active &&
-                                    x.NextBillingDate.Date == today)
-                                .OrderBy(x => x.NextBillingDate)
-                                .ToListAsync();
-
-            return Ok(subscriptions);
+        {
+            var response = await subscriptionService.GetUserDueSubscriptions();
+            return Ok(response);
         }
 
         [HttpGet("categories")]
         public async Task<IActionResult> GetCategories() {
 
-            var categories = await context.Subscription
-                                .AsNoTracking()
-                                .Select(x => x.Category)
-                                .Distinct()
-                                .OrderByDescending(x => x)
-                                .ToListAsync();
-
-            return Ok(categories);
+            var response = await subscriptionService.GetCategories();
+            return Ok(response);
         }
 
-        private string? GetCurrentUserId()
+        // Utility
+        private Guid GetCurrentUserId()
         {
-            var userIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (!Guid.TryParse(userIdGuid, out var userId))
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!Guid.TryParse(userIdString, out var userId))
             {
-                return null;
+                throw new UnauthorizedAccessException("Invalid user identifier.");
             }
-
-            return userId.ToString();
+            // return userId converted to guid from string
+            return userId;
         }
 
     }
