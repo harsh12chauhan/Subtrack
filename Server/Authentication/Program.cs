@@ -1,4 +1,6 @@
 using Authentication.Data;
+using Authentication.Interfaces;
+using Authentication.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -59,6 +61,9 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
+
+// Register Service Scope
+builder.Services.AddScoped<IAuthService,AuthService>();
 
 var app = builder.Build();
 

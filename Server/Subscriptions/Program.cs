@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Subscriptions.Data;
+using Subscriptions.Interfaces;
+using Subscriptions.Services;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -57,6 +59,9 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
+
+// Register service scope
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 
 var app = builder.Build();
 

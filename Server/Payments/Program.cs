@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Payments.Data;
+using Payments.Interface;
+using Payments.Services;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -49,6 +51,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Register Service Scope
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 var app = builder.Build();
 

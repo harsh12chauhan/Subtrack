@@ -12,7 +12,6 @@ namespace Authentication.Controllers
         public UserController(IAuthService _authService)
         {
             authService = _authService;
-            configuration = _configuration;
         }
 
         [HttpPost("register")]
