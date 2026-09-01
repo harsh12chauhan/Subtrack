@@ -86,7 +86,7 @@ namespace Notifications.Controllers
         }
 
         [HttpPatch("read/{notificationId:guid}")]        
-        public async Task<IActionResult> GetNotifications(Guid notificationId) {
+        public async Task<IActionResult> ReadNotification(Guid notificationId) {
 
             var UserIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
