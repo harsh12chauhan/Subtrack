@@ -1,1 +1,0 @@
-README showcase update prepared for upstream review.
