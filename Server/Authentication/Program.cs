@@ -1,5 +1,6 @@
 using Authentication.Data;
 using Authentication.Interfaces;
+using Authentication.Middleware;
 using Authentication.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -64,12 +65,16 @@ builder.Services.AddCors(options =>
 
 // Register Service Scope
 builder.Services.AddScoped<IAuthService,AuthService>();
+builder.Services.AddScoped<IUserService,UserService>();
 
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 
 app.UseCors("ReactPolicy");
+
+// Middleware for handling global exceptions
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
