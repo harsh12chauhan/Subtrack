@@ -16,7 +16,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"Email\":\"admin@gmail\",\r\n    \"Password\":\"admin@123\"\r\n    // \"Email\":\"alien@gmail\",\r\n    // \"Password\":\"alien@123\"\r\n    // \"Email\": \"namit\",\r\n    // \"Password\": \"namit\"\r\n    // \"Email\":\"worker@gmail\",\r\n    // \"Password\":\"worker@123\"\r\n}",
+              "raw": "{\r\n    // \"Email\":\"admin@gmail\",\r\n    // \"Password\":\"admin@123\"\r\n    // \"Email\":\"alien@gmail\",\r\n    // \"Password\":\"alien@123\"\r\n    // \"Email\": \"namit\",\r\n    // \"Password\": \"namit\"\r\n    // \"Email\":\"worker@gmail\",\r\n    // \"Password\":\"worker@123\"\r\n     \"Email\": \"mars@gmail\",\r\n    \"Password\": \"mars@123\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -45,7 +45,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    // \"Username\":\"alien\",\r\n    // \"Email\":\"alien@gmail\",\r\n    // \"Password\":\"alien@123\",\r\n    // \"Balance\":25000\r\n    \r\n}",
+              "raw": "{\r\n    \"Username\":\"mars\",\r\n    \"Email\":\"mars@gmail\",\r\n    \"Password\":\"mars@123\",\r\n    \"Balance\":105000\r\n    \r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -69,6 +69,215 @@
         }
       ],
       "description": "StartFragmenthttps://localhost:7025/auth/registerEndFragment"
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "AllUsersDetails",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg0OTg2OTEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9._y6e5UhsJajZFsdMpn6Bw3q7cv3B2ensXrfkWV4Ct5I",
+                "description": "Alien",
+                "disabled": true
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUzNzMzYTQ0LWViN2UtNDk1MC0xMzU5LTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg4NDk4MjA2LCJpc3MiOiJTdWJ0cmFjayIsImF1ZCI6IlN1YnRyYWNrLVVzZXIifQ.F4EAfWVEV0Xwqtaed88FREdt--qIb4ngSvBFr8mUk_M",
+                "description": "Admin"
+              }
+            ],
+            "url": {
+              "raw": "https://localhost:7025/user/alluser",
+              "protocol": "https",
+              "host": [
+                "localhost"
+              ],
+              "port": "7025",
+              "path": [
+                "user",
+                "alluser"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "UpdateUserProfile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg0OTg2OTEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9._y6e5UhsJajZFsdMpn6Bw3q7cv3B2ensXrfkWV4Ct5I",
+                "description": "Alien",
+                "disabled": true
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUzNzMzYTQ0LWViN2UtNDk1MC0xMzU5LTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg4NDk4MjA2LCJpc3MiOiJTdWJ0cmFjayIsImF1ZCI6IlN1YnRyYWNrLVVzZXIifQ.F4EAfWVEV0Xwqtaed88FREdt--qIb4ngSvBFr8mUk_M",
+                "description": "Admin",
+                "disabled": true
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjgxMDNkZmFkLTFmN2MtNGJkMi03N2RhLTA4ZGYwOTg2YmRlNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg1MDQ0NzUsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.QM93mtC7se6IbKMXjAGfylkFIYeqJqsBLdupH5gsbFI",
+                "description": "Mars"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"mars\",\r\n    \"email\": \"mars@gmail\",\r\n    \"balance\": 1050.00\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://localhost:7025/user/update",
+              "protocol": "https",
+              "host": [
+                "localhost"
+              ],
+              "port": "7025",
+              "path": [
+                "user",
+                "update"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "UpdateUserRole",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg0OTg2OTEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9._y6e5UhsJajZFsdMpn6Bw3q7cv3B2ensXrfkWV4Ct5I",
+                "description": "Alien",
+                "disabled": true
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUzNzMzYTQ0LWViN2UtNDk1MC0xMzU5LTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg4NDk4MjA2LCJpc3MiOiJTdWJ0cmFjayIsImF1ZCI6IlN1YnRyYWNrLVVzZXIifQ.F4EAfWVEV0Xwqtaed88FREdt--qIb4ngSvBFr8mUk_M",
+                "description": "Admin"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjgxMDNkZmFkLTFmN2MtNGJkMi03N2RhLTA4ZGYwOTg2YmRlNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg1MDQ0NzUsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.QM93mtC7se6IbKMXjAGfylkFIYeqJqsBLdupH5gsbFI",
+                "description": "Mars",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "https://localhost:7025/user/role/8103dfad-1f7c-4bd2-77da-08df0986bde6/User",
+              "protocol": "https",
+              "host": [
+                "localhost"
+              ],
+              "port": "7025",
+              "path": [
+                "user",
+                "role",
+                "8103dfad-1f7c-4bd2-77da-08df0986bde6",
+                "User"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "UserDetailsById",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg0OTg2OTEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9._y6e5UhsJajZFsdMpn6Bw3q7cv3B2ensXrfkWV4Ct5I",
+                "description": "Alien",
+                "disabled": true
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUzNzMzYTQ0LWViN2UtNDk1MC0xMzU5LTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg4NDk4MjA2LCJpc3MiOiJTdWJ0cmFjayIsImF1ZCI6IlN1YnRyYWNrLVVzZXIifQ.F4EAfWVEV0Xwqtaed88FREdt--qIb4ngSvBFr8mUk_M",
+                "description": "Admin",
+                "disabled": true
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjgxMDNkZmFkLTFmN2MtNGJkMi03N2RhLTA4ZGYwOTg2YmRlNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg1MDQ0NzUsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.QM93mtC7se6IbKMXjAGfylkFIYeqJqsBLdupH5gsbFI",
+                "description": "Mars"
+              }
+            ],
+            "url": {
+              "raw": "https://localhost:7025/user/profile",
+              "protocol": "https",
+              "host": [
+                "localhost"
+              ],
+              "port": "7025",
+              "path": [
+                "user",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "UpdatePassword",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg0OTg2OTEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9._y6e5UhsJajZFsdMpn6Bw3q7cv3B2ensXrfkWV4Ct5I",
+                "description": "Alien",
+                "disabled": true
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUzNzMzYTQ0LWViN2UtNDk1MC0xMzU5LTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg4NDk4MjA2LCJpc3MiOiJTdWJ0cmFjayIsImF1ZCI6IlN1YnRyYWNrLVVzZXIifQ.F4EAfWVEV0Xwqtaed88FREdt--qIb4ngSvBFr8mUk_M",
+                "description": "Admin",
+                "disabled": true
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjgxMDNkZmFkLTFmN2MtNGJkMi03N2RhLTA4ZGYwOTg2YmRlNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg1MDQ0NzUsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.QM93mtC7se6IbKMXjAGfylkFIYeqJqsBLdupH5gsbFI",
+                "description": "Mars"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"Password\":\"mars@123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://localhost:7025/user/changepassword",
+              "protocol": "https",
+              "host": [
+                "localhost"
+              ],
+              "port": "7025",
+              "path": [
+                "user",
+                "changepassword"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     },
     {
       "name": "Subscription",
@@ -200,7 +409,8 @@
                   {
                     "key": "Authorization",
                     "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImJhMzgyNjZhLWQ2ZjctNDFlYy0wOTNhLTA4ZGYwNDA2YWVhYSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IldvcmtlciIsImV4cCI6MTc4Nzg5OTYwMywiaXNzIjoiU3VidHJhY2siLCJhdWQiOiJTdWJ0cmFjay1Vc2VyIn0._xyB6FV3JuLETX2qjoouHnO3CRoN3djfjSc9Fj0zKHc",
-                    "description": "Worker"
+                    "description": "Worker",
+                    "disabled": true
                   },
                   {
                     "key": "Authorization",
@@ -213,6 +423,11 @@
                     "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImEyZDdmNDZiLTBjYjctNDYwZi05N2VhLTA4ZGYwMzQwNWFlNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODc5MTI3OTIsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.ejwuucO6BnFKxHAmbL08uBWSsVjYdP9Yx7rSSZJ5_Zw",
                     "description": "Namit",
                     "disabled": true
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUzNzMzYTQ0LWViN2UtNDk1MC0xMzU5LTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg4MTAwMzY2LCJpc3MiOiJTdWJ0cmFjayIsImF1ZCI6IlN1YnRyYWNrLVVzZXIifQ.BYViuabXFKnsv1cTFIoygGru1N8CfOD_vjy_hdeFvcg",
+                    "description": "Admin"
                   }
                 ],
                 "url": {
@@ -304,7 +519,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODc4OTk4NzEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.ufdMRaI2w5mMH1AXaLL2pOu3gPku6MxL-yhb0OC-_ag",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg0OTg2OTEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9._y6e5UhsJajZFsdMpn6Bw3q7cv3B2ensXrfkWV4Ct5I",
                 "description": "Alien"
               },
               {
@@ -316,7 +531,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"Name\": \"AmazonePrime\",\r\n    \"Amount\": 699,\r\n    \"BillingCycle\": \"Monthly\",\r\n    \"NextBillingDate\": \"2026-08-27\",\r\n    \"Category\": \"Video Streaming\"\r\n   \r\n    // \"Name\": \"DisneyPlus\",\r\n    // \"Amount\": 899,\r\n    // \"BillingCycle\": \"Yearly\",\r\n    // \"NextBillingDate\": \"2027-03-15\",\r\n    // \"Category\": \"Video Streaming\"\r\n  \r\n    // \"Name\": \"YouTubePremium\",\r\n    // \"Amount\": 129,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-09-12\",\r\n    // \"Category\": \"Entertainment\"\r\n   \r\n    // \"Name\": \"Netflix\",\r\n    // \"Amount\": 649,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-09-05\",\r\n    // \"Category\": \"Video Streaming\"\r\n  \r\n    // \"Name\": \"Spotify\",\r\n    // \"Amount\": 119,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-09-08\",\r\n    // \"Category\": \"Music Streaming\"\r\n\r\n    // \"Name\": \"Microsoft365\",\r\n    // \"Amount\": 4899,\r\n    // \"BillingCycle\": \"Yearly\",\r\n    // \"NextBillingDate\": \"2027-01-20\",\r\n    // \"Category\": \"Productivity\"\r\n\r\n    // \"Name\": \"GoogleOne\",\r\n    // \"Amount\": 130,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-09-18\",\r\n    // \"Category\": \"Cloud Storage\"\r\n\r\n    // \"Name\": \"AppleMusic\",\r\n    // \"Amount\": 99,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-09-22\",\r\n    // \"Category\": \"Music Streaming\"\r\n \r\n    // \"Name\": \"AdobeCreativeCloud\",\r\n    // \"Amount\": 1675,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-09-25\",\r\n    // \"Category\": \"Design & Creativity\"\r\n\r\n    // \"Name\": \"Hotstar\",\r\n    // \"Amount\": 1499,\r\n    // \"BillingCycle\": \"Yearly\",\r\n    // \"NextBillingDate\": \"2027-06-10\",\r\n    // \"Category\": \"Video Streaming\"\r\n   \r\n    // \"Name\": \"Dropbox\",\r\n    // \"Amount\": 999,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-09-30\",\r\n    // \"Category\": \"Cloud Storage\"\r\n\r\n}",
+              "raw": "{\r\n    // \"Name\": \"AmazonePrime\",\r\n    // \"Amount\": 699,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-08-27\",\r\n    // \"Category\": \"Video Streaming\"\r\n   \r\n    // \"Name\": \"DisneyPlus\",\r\n    // \"Amount\": 899,\r\n    // \"BillingCycle\": \"Yearly\",\r\n    // \"NextBillingDate\": \"2027-03-15\",\r\n    // \"Category\": \"Video Streaming\"\r\n  \r\n    // \"Name\": \"YouTubePremium\",\r\n    // \"Amount\": 129,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-09-12\",\r\n    // \"Category\": \"Entertainment\"\r\n   \r\n    // \"Name\": \"Netflix\",\r\n    // \"Amount\": 649,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-09-05\",\r\n    // \"Category\": \"Video Streaming\"\r\n  \r\n    // \"Name\": \"Spotify\",\r\n    // \"Amount\": 119,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-08-28\",\r\n    // \"Category\": \"Music Streaming\"\r\n\r\n    // \"Name\": \"Microsoft365\",\r\n    // \"Amount\": 4899,\r\n    // \"BillingCycle\": \"Yearly\",\r\n    // \"NextBillingDate\": \"2026-08-29\",\r\n    // \"Category\": \"Productivity\"\r\n\r\n    // \"Name\": \"GoogleOne\",\r\n    // \"Amount\": 130,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-08-29\",\r\n    // \"Category\": \"Cloud Storage\"\r\n\r\n    // \"Name\": \"AppleMusic\",\r\n    // \"Amount\": 99,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-08-29\",\r\n    // \"Category\": \"Music Streaming\"\r\n\r\n    \"Name\": \"Bike EMI\",\r\n    \"Amount\": 5400,\r\n    \"BillingCycle\": \"Monthly\",\r\n    \"NextBillingDate\": \"2026-09-03\",\r\n    \"Category\": \"EMI\"\r\n \r\n    // \"Name\": \"AdobeCreativeCloud\",\r\n    // \"Amount\": 1675,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-09-25\",\r\n    // \"Category\": \"Design & Creativity\"\r\n\r\n    // \"Name\": \"Hotstar\",\r\n    // \"Amount\": 1499,\r\n    // \"BillingCycle\": \"Yearly\",\r\n    // \"NextBillingDate\": \"2027-06-10\",\r\n    // \"Category\": \"Video Streaming\"\r\n   \r\n    // \"Name\": \"Dropbox\",\r\n    // \"Amount\": 999,\r\n    // \"BillingCycle\": \"Monthly\",\r\n    // \"NextBillingDate\": \"2026-09-30\",\r\n    // \"Category\": \"Cloud Storage\"\r\n\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -345,7 +560,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODc4OTk4NzEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.ufdMRaI2w5mMH1AXaLL2pOu3gPku6MxL-yhb0OC-_ag",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODgwODQwNjksImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.-HE-6_ZLG6FM_FBmnasyr3FLwxdv8ffzYMzkoglDXVE",
                 "description": "Alien"
               },
               {
@@ -409,7 +624,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODczNzg4MjYsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.PcO3z0efhA4pRZ7yzLAEs28rbv4HTwuhD2oEauo2ZQ0",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODc4OTk4NzEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.ufdMRaI2w5mMH1AXaLL2pOu3gPku6MxL-yhb0OC-_ag",
                 "description": "Alien"
               },
               {
@@ -489,18 +704,24 @@
               {
                 "key": "Authorization",
                 "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODc4MDgyNzIsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.3RMb5UqN2Y61ohSZ4BbdRnc4JLJhRjqSAWJr7cxxvns",
-                "description": "Alien"
+                "description": "Alien",
+                "disabled": true
               },
               {
                 "key": "Authorization",
                 "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUzNzMzYTQ0LWViN2UtNDk1MC0xMzU5LTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg3Mzc4NjcyLCJpc3MiOiJTdWJ0cmFjayIsImF1ZCI6IlN1YnRyYWNrLVVzZXIifQ.zT_iuivlGtdTqXvEVYzSj_7PDpqXQcs1VOSyz0Fefvc",
                 "description": "Admin",
                 "disabled": true
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImJhMzgyNjZhLWQ2ZjctNDFlYy0wOTNhLTA4ZGYwNDA2YWVhYSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IldvcmtlciIsImV4cCI6MTc4ODAyOTU1MywiaXNzIjoiU3VidHJhY2siLCJhdWQiOiJTdWJ0cmFjay1Vc2VyIn0.1w5Vr-N7-Q53pzwtSNCIC1Ylnrt9jMtZTWQkLL3Rl4w",
+                "description": "Worker"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"subscriptionId\": \"df018bba-54d1-49a8-300b-08deff4bcf1c\",\r\n  \"amount\": 3456.00\r\n}",
+              "raw": "{\r\n  \"subscriptionId\": \"df018bba-54d1-49a8-300b-08deff4bcf1c\",\r\n  \"amount\": 987.00\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -594,7 +815,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODc4MDgyNzIsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.3RMb5UqN2Y61ohSZ4BbdRnc4JLJhRjqSAWJr7cxxvns",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODgwODQwNjksImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.-HE-6_ZLG6FM_FBmnasyr3FLwxdv8ffzYMzkoglDXVE",
                 "description": "Alien"
               },
               {
@@ -632,7 +853,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUzNzMzYTQ0LWViN2UtNDk1MC0xMzU5LTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg3Mzc4NjcyLCJpc3MiOiJTdWJ0cmFjayIsImF1ZCI6IlN1YnRyYWNrLVVzZXIifQ.zT_iuivlGtdTqXvEVYzSj_7PDpqXQcs1VOSyz0Fefvc",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUzNzMzYTQ0LWViN2UtNDk1MC0xMzU5LTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg4MDMwOTY5LCJpc3MiOiJTdWJ0cmFjayIsImF1ZCI6IlN1YnRyYWNrLVVzZXIifQ.kD18vIfgSnbUADeAUcOlqN_WeOXYcgpsNOqVe2Qiztk",
                 "description": "Admin"
               }
             ],
@@ -663,19 +884,19 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODc4OTk4NzEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.ufdMRaI2w5mMH1AXaLL2pOu3gPku6MxL-yhb0OC-_ag",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg0OTg2OTEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9._y6e5UhsJajZFsdMpn6Bw3q7cv3B2ensXrfkWV4Ct5I",
                 "description": "Alien",
                 "disabled": true
               },
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImJhMzgyNjZhLWQ2ZjctNDFlYy0wOTNhLTA4ZGYwNDA2YWVhYSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IldvcmtlciIsImV4cCI6MTc4Nzg5OTYwMywiaXNzIjoiU3VidHJhY2siLCJhdWQiOiJTdWJ0cmFjay1Vc2VyIn0._xyB6FV3JuLETX2qjoouHnO3CRoN3djfjSc9Fj0zKHc",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImJhMzgyNjZhLWQ2ZjctNDFlYy0wOTNhLTA4ZGYwNDA2YWVhYSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IldvcmtlciIsImV4cCI6MTc4ODQ5OTA4NCwiaXNzIjoiU3VidHJhY2siLCJhdWQiOiJTdWJ0cmFjay1Vc2VyIn0.C2r1a07II1caRzQkfzhRotGVB9d27OmNhV3hyLflSz0",
                 "description": "Worker"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "// {\r\n//     \"userId\": \"1680d57c-2012-4948-a0bb-08df02bc6618\",\r\n//     \"title\": \"Payment Successful\",\r\n//     \"message\": \"Spotify subscription renewed successfully.\",\r\n//     \"type\": 1\r\n// }\r\n\r\n{\r\n    \"userId\": \"13c00322-b2b1-49fb-135a-08deff49d216\",\r\n    \"title\": \"Payment Failed\",\r\n    \"message\": \"Unable to process Spotify subscription payment.\",\r\n    \"type\": 2\r\n}",
+              "raw": "{\r\n    \"userId\": \"1680d57c-2012-4948-a0bb-08df02bc6618\",\r\n    \"title\": \"Payment Successful\",\r\n    \"message\": \"Bike EMI Paid successfully.\",\r\n    \"type\": 3\r\n}\r\n\r\n// {\r\n//     \"userId\": \"13c00322-b2b1-49fb-135a-08deff49d216\",\r\n//     \"title\": \"Payment Failed\",\r\n//     \"message\": \"Unable to process Spotify subscription payment.\",\r\n//     \"type\": 2\r\n// }",
               "options": {
                 "raw": {
                   "language": "json"
@@ -704,7 +925,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODc4OTk4NzEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.ufdMRaI2w5mMH1AXaLL2pOu3gPku6MxL-yhb0OC-_ag",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg0OTg2OTEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9._y6e5UhsJajZFsdMpn6Bw3q7cv3B2ensXrfkWV4Ct5I",
                 "description": "Alien"
               },
               {
@@ -736,14 +957,14 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODc4OTk4NzEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.ufdMRaI2w5mMH1AXaLL2pOu3gPku6MxL-yhb0OC-_ag",
-                "description": "Alien",
-                "disabled": true
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg0OTg2OTEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9._y6e5UhsJajZFsdMpn6Bw3q7cv3B2ensXrfkWV4Ct5I",
+                "description": "Alien"
               },
               {
                 "key": "Authorization",
                 "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImEyZDdmNDZiLTBjYjctNDYwZi05N2VhLTA4ZGYwMzQwNWFlNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODc5MTI3OTIsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.ejwuucO6BnFKxHAmbL08uBWSsVjYdP9Yx7rSSZJ5_Zw",
-                "description": "Namit"
+                "description": "Namit",
+                "disabled": true
               }
             ],
             "url": {
@@ -768,7 +989,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODc4OTk4NzEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.ufdMRaI2w5mMH1AXaLL2pOu3gPku6MxL-yhb0OC-_ag",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg0OTg2OTEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9._y6e5UhsJajZFsdMpn6Bw3q7cv3B2ensXrfkWV4Ct5I",
                 "description": "Alien"
               },
               {
@@ -779,7 +1000,7 @@
               }
             ],
             "url": {
-              "raw": "https://localhost:7056/notification/read/13c00322-b2b1-49fb-135a-08deff49d216",
+              "raw": "https://localhost:7056/notification/read/3114e102-e8e1-4d89-732b-08df05eb4da3",
               "protocol": "https",
               "host": [
                 "localhost"
@@ -788,7 +1009,7 @@
               "path": [
                 "notification",
                 "read",
-                "13c00322-b2b1-49fb-135a-08deff49d216"
+                "3114e102-e8e1-4d89-732b-08df05eb4da3"
               ]
             }
           },
@@ -801,7 +1022,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODc4OTk4NzEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9.ufdMRaI2w5mMH1AXaLL2pOu3gPku6MxL-yhb0OC-_ag",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzYzAwMzIyLWIyYjEtNDlmYi0xMzVhLTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODg0OTg2OTEsImlzcyI6IlN1YnRyYWNrIiwiYXVkIjoiU3VidHJhY2stVXNlciJ9._y6e5UhsJajZFsdMpn6Bw3q7cv3B2ensXrfkWV4Ct5I",
                 "description": "Alien"
               },
               {
@@ -845,12 +1066,12 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUzNzMzYTQ0LWViN2UtNDk1MC0xMzU5LTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg3OTE0Mjc4LCJpc3MiOiJTdWJ0cmFjayIsImF1ZCI6IlN1YnRyYWNrLVVzZXIifQ.4foFjI78Z96lkEuoceNYhvYMGFAlKep7vaV8vFj6r4M",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUzNzMzYTQ0LWViN2UtNDk1MC0xMzU5LTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg4NDk4MjA2LCJpc3MiOiJTdWJ0cmFjayIsImF1ZCI6IlN1YnRyYWNrLVVzZXIifQ.F4EAfWVEV0Xwqtaed88FREdt--qIb4ngSvBFr8mUk_M",
                 "description": "Admin"
               }
             ],
             "url": {
-              "raw": "https://localhost:7056/notification/delete/c025c64b-d02d-47d5-5b8c-08df0428a424",
+              "raw": "https://localhost:7056/notification/delete/8e94e969-322c-4886-31e9-08df076e4a47",
               "protocol": "https",
               "host": [
                 "localhost"
@@ -859,7 +1080,7 @@
               "path": [
                 "notification",
                 "delete",
-                "c025c64b-d02d-47d5-5b8c-08df0428a424"
+                "8e94e969-322c-4886-31e9-08df076e4a47"
               ]
             }
           },
@@ -884,8 +1105,14 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUzNzMzYTQ0LWViN2UtNDk1MC0xMzU5LTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg3OTE0Mjc4LCJpc3MiOiJTdWJ0cmFjayIsImF1ZCI6IlN1YnRyYWNrLVVzZXIifQ.4foFjI78Z96lkEuoceNYhvYMGFAlKep7vaV8vFj6r4M",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUzNzMzYTQ0LWViN2UtNDk1MC0xMzU5LTA4ZGVmZjQ5ZDIxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg4NDk4MjA2LCJpc3MiOiJTdWJ0cmFjayIsImF1ZCI6IlN1YnRyYWNrLVVzZXIifQ.F4EAfWVEV0Xwqtaed88FREdt--qIb4ngSvBFr8mUk_M",
                 "description": "Admin"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImJhMzgyNjZhLWQ2ZjctNDFlYy0wOTNhLTA4ZGYwNDA2YWVhYSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IldvcmtlciIsImV4cCI6MTc4Nzg5OTYwMywiaXNzIjoiU3VidHJhY2siLCJhdWQiOiJTdWJ0cmFjay1Vc2VyIn0._xyB6FV3JuLETX2qjoouHnO3CRoN3djfjSc9Fj0zKHc",
+                "description": "Worker",
+                "disabled": true
               }
             ],
             "url": {

@@ -2,6 +2,7 @@
 using Authentication.Dto;
 using Authentication.Entity;
 using Authentication.Enum;
+using Authentication.Exceptions;
 using Authentication.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,7 @@ namespace Authentication.Services
 
             if (user)
             {
-                throw new ArgumentException("User with this email already exists");
+                throw new UserEmailAlreadyExistsException("User with this email already exists");
             }
 
             var newUser = new User
@@ -54,14 +55,14 @@ namespace Authentication.Services
 
             if (user is null)
             {
-                throw new ArgumentException("Invalid email or password");
+                throw new BadRequestException("Invalid email or password");
             }
 
             var isPasswordValid = new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, userLoginDto.Password);
 
             if (isPasswordValid == PasswordVerificationResult.Failed)
             {
-                throw new ArgumentException("Invalid email or password");
+                throw new BadRequestException("Invalid email or password");
             }
 
             string token = CreateJwtToken(user);
@@ -86,19 +87,19 @@ namespace Authentication.Services
             var securityKey = configuration.GetValue<string>("TokenDetail:SecurityKey");
             if (string.IsNullOrWhiteSpace(securityKey))
             {
-                throw new InvalidOperationException("Configuration value 'TokenDetail:SecurityKey' is missing or empty.");
+                throw new JwtConfigurationException("Configuration value 'TokenDetail:SecurityKey' is missing or empty.");
             }
 
             var issuer = configuration.GetValue<string>("TokenDetail:Issuer");
             if (string.IsNullOrWhiteSpace(issuer))
             {
-                throw new InvalidOperationException("Configuration value 'TokenDetail:Issuer' is missing or empty.");
+                throw new JwtConfigurationException("Configuration value 'TokenDetail:Issuer' is missing or empty.");
             }
 
             var audience = configuration.GetValue<string>("TokenDetail:Audience");
             if (string.IsNullOrWhiteSpace(audience))
             {
-                throw new InvalidOperationException("Configuration value 'TokenDetail:Audience' is missing or empty.");
+                throw new JwtConfigurationException("Configuration value 'TokenDetail:Audience' is missing or empty.");
             }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
