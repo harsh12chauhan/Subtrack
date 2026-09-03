@@ -1,1 +1,0 @@
-This file is intentionally included to create the README showcase pull request.
