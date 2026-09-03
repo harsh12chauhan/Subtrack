@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Notifications.Data;
 using Notifications.Dto;
-using Notifications.Entity;
+using Notifications.Interfaces;
 using System.Security.Claims;
 
 namespace Notifications.Controllers
@@ -11,150 +9,102 @@ namespace Notifications.Controllers
     [ApiController]
     [Route("notification")]
     [Authorize]
-    public class NotificationController: ControllerBase
+    public class NotificationController : ControllerBase
     {
-        private readonly NotificationDbContext context;
+        private readonly INotificationService notificationService;
 
-        public NotificationController(NotificationDbContext _context) { 
-                context = _context;
+        public NotificationController(INotificationService _notificationService)
+        {
+            notificationService = _notificationService;
         }
-       
+
         [HttpPost("create")]
         [Authorize(Roles = "Worker")]
-        public async Task<IActionResult> CreateNotification(CreateNotificationDto createNotificationDto) {
-            
-            Notification notification = new Notification { 
-                
-                UserId = createNotificationDto.UserId,
-                Title = createNotificationDto.Title,
-                Message = createNotificationDto.Message,
-                Type = createNotificationDto.Type,
-                IsRead = false,
-                CreatedAt = DateTime.UtcNow
-            };
+        public async Task<IActionResult> CreateNotification(CreateNotificationDto createNotificationDto)
+        {
 
-            context.Notification.Add(notification);
-            await context.SaveChangesAsync();
+            var response = await notificationService.CreateNotification(createNotificationDto);
+            return Ok(response);
 
-            return Ok(notification);
-            
         }
 
-        [HttpGet("my")]        
-        public async Task<IActionResult> GetUserNotifications() {
+        [HttpGet("my")]
+        public async Task<IActionResult> UserNotifications()
+        {
 
-            var UserIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetCurrentUserId();
 
-            if (!Guid.TryParse(UserIdGuid, out var userId)) {
-                return Unauthorized("Invalid user identifier.");
-            }
+            var response = await notificationService.GetUserNotifications(userId);
 
-            var notifications = await context.Notification
-                                .AsNoTracking()
-                                .Where(x => x.UserId == userId)
-                                .OrderByDescending(x => x.CreatedAt)
-                                .ToListAsync();
-
-            return Ok(notifications);
+            return Ok(response);
         }
 
-        [HttpPatch("readall")]        
-        public async Task<IActionResult> ReadAllNotifications() {
+        [HttpPatch("readall")]
+        public async Task<IActionResult> ReadAllNotifications()
+        {
 
-            var UserIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetCurrentUserId();
 
-            if (!Guid.TryParse(UserIdGuid, out var userId)) {
-                return Unauthorized("Invalid user identifier.");
-            }
+            var response = await notificationService.ReadAllNotifications(userId);
 
-            var notifications = await context.Notification
-                                    .Where(x => x.UserId == userId)
-                                    .ToListAsync();
-
-            if (!notifications.Any())
-            {
-                return NotFound("All Notifications are already seen");
-            }
-          
-            foreach (var item in notifications)
-            {
-                item.IsRead = true;
-            }            
-            
-            await context.SaveChangesAsync();
-            return Ok("Marked Seen");
+            return Ok(response);
         }
 
-        [HttpPatch("read/{notificationId:guid}")]        
-        public async Task<IActionResult> ReadNotification(Guid notificationId) {
+        [HttpPatch("read/{notificationId:guid}")]
+        public async Task<IActionResult> ReadNotification(Guid notificationId)
+        {
 
-            var UserIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetCurrentUserId();
 
-            if (!Guid.TryParse(UserIdGuid, out var userId)) {
-                return Unauthorized("Invalid user identifier.");
-            }
+            var response = await notificationService.ReadNotification(notificationId, userId);
 
-            var notification = await context.Notification
-                                .FirstOrDefaultAsync(x => x.Id == notificationId && x.UserId == userId);
-
-            if (notification is null) {
-                return NotFound("No notifications found.");
-            }
-
-            if (notification.IsRead) {
-                return Ok("Notification already seen");
-            }
-
-            notification.IsRead = true;
-            await context.SaveChangesAsync();
-
-            return Ok("Marked Seen");
+            return Ok(response);
         }
 
         [HttpGet("unreadcount")]
-        public async Task<IActionResult> GetCountOfUnreadNotifications()
+        public async Task<IActionResult> CountOfUnreadNotifications()
         {
 
-            var UserIdGuid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetCurrentUserId();
 
-            if (!Guid.TryParse(UserIdGuid, out var userId))
-            {
-                return Unauthorized("Invalid user identifier.");
-            }
+            var response = await notificationService.GetCountOfUnreadNotifications(userId);
 
-            var notificationsCount = await context.Notification
-                                    .CountAsync(x => !x.IsRead && x.UserId == userId);
-                        
-            return Ok(notificationsCount);
+            return Ok(response);
         }
 
         [HttpDelete("delete/{notificationId:guid}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteNotifications(Guid notificationId) {
+        public async Task<IActionResult> DeleteNotifications(Guid notificationId)
+        {
 
-            var notification = await context.Notification
-                                .FirstOrDefaultAsync(x => x.Id == notificationId);
+            var userId = GetCurrentUserId();
 
-            if (notification is null) {
-                return NotFound("Notification Not Exists");
-            }
+            var response = await notificationService.DeleteNotifications(notificationId);
 
-            context.Notification.Remove(notification);
-            await context.SaveChangesAsync();
-
-            return Ok("Notification Deleted");
+            return Ok(response);
         }
 
         [HttpGet("all")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllNotifications()
-        {            
-            var notifications = await context.Notification
-                                    .AsNoTracking()
-                                    .ToListAsync();
-
-            return Ok(notifications);
+        {
+            var response = await notificationService.GetAllNotifications();
+            return Ok(response);
         }
-        
+
+
+        // Utility
+        private Guid GetCurrentUserId()
+        {
+
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!Guid.TryParse(userIdString, out var userId))
+            {
+                throw new UnauthorizedAccessException("Invalid user identifier.");
+            }
+            // return userId converted to guid from string
+            return userId;
+        }
     }
 }

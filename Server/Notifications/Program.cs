@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Notifications.Data;
+using Notifications.Interfaces;
+using Notifications.Services;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -49,6 +51,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Register service scope
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 var app = builder.Build();
 

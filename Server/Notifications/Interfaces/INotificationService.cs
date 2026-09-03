@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Notifications.Dto;
+﻿using Notifications.Dto;
 
 namespace Notifications.Interfaces
 {
@@ -7,16 +6,16 @@ namespace Notifications.Interfaces
     {
         Task<NotificationResponseDto> CreateNotification(CreateNotificationDto createNotificationDto);
 
-        Task<List<NotificationResponseDto>> GetUserNotifications();
+        Task<List<NotificationResponseDto>> GetUserNotifications(Guid userId);
 
-        Task<string> ReadAllNotifications();
+        Task<string> ReadAllNotifications(Guid userId);
 
-        Task<string> ReadNotification(Guid notificationId);
+        Task<string> ReadNotification(Guid notificationId, Guid userId);
 
-        Task<int> GetCountOfUnreadNotifications();
+        Task<int> GetCountOfUnreadNotifications(Guid userId);
 
         Task<string> DeleteNotifications(Guid notificationId);
 
-        Task<NotificationResponseDto> GetAllNotifications();
+        Task<List<NotificationResponseDto>> GetAllNotifications();
     }
 }
