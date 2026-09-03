@@ -1,10 +1,62 @@
-# SubTrack
+# 🚀 SubTrack
 
-SubTrack is a subscription and recurring-payment management platform built with a React + TypeScript frontend and a multi-service ASP.NET Core backend. It supports authentication, role-based access control, subscription lifecycle management, payments, notifications, and automated subscription renewals.
+> **A full-stack subscription management platform with automated recurring payments, role-based access control, notifications, and a dedicated renewal worker.**
 
-## Architecture
+SubTrack is built with **React + TypeScript** on the frontend and a **multi-service ASP.NET Core backend**. The project demonstrates how independent backend responsibilities can be separated into services while a dedicated background worker coordinates recurring billing.
 
-The backend is organized as multiple ASP.NET Core services plus a dedicated background worker:
+<p align="center">
+  <img src="https://img.shields.io/badge/.NET-8%2B-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET" />
+  <img src="https://img.shields.io/badge/ASP.NET_Core-Web_API-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt="ASP.NET Core" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/SQL_Server-EF_Core-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white" alt="SQL Server" />
+</p>
+
+---
+
+## ✨ Why SubTrack?
+
+SubTrack goes beyond basic CRUD by combining **authentication, authorization, subscription lifecycle management, payment processing, notifications, and automated background processing** into one working system.
+
+### What makes it interesting?
+
+- 🔐 **JWT authentication + role-based authorization** for `User`, `Admin`, and `Worker`
+- 🧩 **Four ASP.NET Core API services** with clear responsibilities
+- ⚙️ **Dedicated BackgroundService** for automated recurring renewals
+- 💳 **Internal payment flow** designed specifically for the renewal worker
+- 🔔 **Notification workflow** for successful and failed renewals
+- 🗄️ **Entity Framework Core + SQL Server** with service-specific data contexts
+- 🔄 **Service-to-service HTTP communication** using `IHttpClientFactory`
+- 🧪 **Postman collection** for exploring and testing the APIs
+
+---
+
+## 🏗️ Architecture
+
+The system consists of a React client, four ASP.NET Core API services, and a dedicated background worker.
+
+```mermaid
+flowchart LR
+    UI[React + TypeScript Client]
+
+    AUTH[Authentication Service\n:7025]
+    SUB[Subscription Service\n:7081]
+    PAY[Payment Service\n:7070]
+    NOTIF[Notification Service\n:7056]
+    WORKER[Renewal Worker\nBackgroundService]
+
+    UI --> AUTH
+    UI --> SUB
+    UI --> PAY
+    UI --> NOTIF
+
+    WORKER --> AUTH
+    WORKER --> SUB
+    WORKER --> PAY
+    WORKER --> NOTIF
+```
+
+### Service responsibilities
 
 | Component | Port | Responsibility |
 |---|---:|---|
@@ -14,35 +66,72 @@ The backend is organized as multiple ASP.NET Core services plus a dedicated back
 | **Notification Service** | `7056` | User notifications, unread counts, read/unread management, and admin notification management |
 | **Renewal Worker** | — | Background orchestration for recurring subscription renewals |
 
-```text
-React + TypeScript Client
-          |
-          +----> Authentication Service (:7025)
-          +----> Subscription Service  (:7081)
-          +----> Payment Service       (:7070)
-          +----> Notification Service  (:7056)
+> **Note:** The Renewal Worker is a background orchestration component, not a public HTTP API service.
 
-Renewal Worker
-      |
-      +----> Authentication Service
-      +----> Subscription Service
-      +----> Payment Service
-      +----> Notification Service
+---
+
+## 🔄 Automated Renewal Workflow
+
+One of the core features of SubTrack is its automated recurring-payment workflow.
+
+```mermaid
+flowchart TD
+    A[Renewal Worker wakes up] --> B[Authenticate with Auth Service]
+    B --> C[Get subscriptions due for renewal]
+    C --> D[Process payment via internal Payment endpoint]
+    D --> E{Payment successful?}
+
+    E -->|No| F[Create failure notification]
+    E -->|Yes| G[Renew subscription]
+    G --> H[Create success notification]
+
+    F --> I[Wait for next 30-second cycle]
+    H --> I
+    I --> A
 ```
 
-The frontend uses Axios clients to communicate with the backend services. The Renewal Worker coordinates the recurring-billing workflow without being a public HTTP API service itself.
+The worker is implemented with `BackgroundService` and uses `IHttpClientFactory` for service-to-service HTTP communication. It obtains a JWT, checks for due subscriptions, calls the internal payment endpoint, creates notifications, and renews successfully paid subscriptions.
 
-## Features
+The worker polls every **30 seconds** and supports graceful cancellation through `CancellationToken`.
 
-### Authentication & Authorization
+---
 
-- JWT-based authentication
-- Role-based authorization with `User`, `Admin`, and `Worker` roles
+## 🔐 Authorization Model
+
+SubTrack uses JWT authentication together with role-based authorization.
+
+```mermaid
+flowchart LR
+    LOGIN[User Login] --> JWT[JWT Token]
+    JWT --> USER[User Role]
+    JWT --> ADMIN[Admin Role]
+    JWT --> WORKER[Worker Role]
+
+    USER --> USER_API[User-facing operations]
+    ADMIN --> ADMIN_API[Administrative operations]
+    WORKER --> WORKER_API[Internal renewal operations]
+```
+
+### Role examples
+
+| Role | Typical responsibilities |
+|---|---|
+| **User** | Manage profile, subscriptions, payments, and notifications |
+| **Admin** | Manage users/roles and access system-wide administrative data |
+| **Worker** | Execute internal renewal, payment, and notification operations |
+
+---
+
+## 💡 Key Features
+
+### Authentication & User Management
+
 - User registration and login
+- JWT-based authentication
 - User profile retrieval and updates
 - Password changes
-- Admin user listing and role management
-- Worker-only endpoints for internal renewal operations
+- Admin user listing
+- Admin role management
 
 ### Subscription Management
 
@@ -50,11 +139,11 @@ The frontend uses Axios clients to communicate with the backend services. The Re
 - View individual subscriptions
 - View the authenticated user's subscriptions
 - Admin access to all subscriptions
-- Subscription statuses: `Active`, `Paused`, and `Cancelled`
+- `Active`, `Paused`, and `Cancelled` statuses
 - Monthly and yearly billing cycles
 - Subscription categories
 - Next billing date tracking
-- Detection of subscriptions due for renewal
+- Due-subscription detection
 - Worker-driven subscription renewal
 - Admin subscription deletion
 
@@ -70,46 +159,20 @@ The frontend uses Axios clients to communicate with the backend services. The Re
 ### Notifications
 
 - Create notifications from the renewal workflow
-- View the current user's notifications
+- View current user's notifications
 - Unread notification count
 - Mark individual notifications as read
 - Mark all notifications as read
-- Admin access to all notifications
-- Admin notification deletion
+- Admin notification management
 
-## Automated Renewal Workflow
+---
 
-SubTrack includes a dedicated `BackgroundService` that automates recurring subscription billing.
+## 📡 API Overview
 
-```text
-Renewal Worker
-      |
-      v
-Authenticate with Auth Service
-      |
-      v
-Find subscriptions due for renewal
-      |
-      v
-Process payment through Payment Service
-      |
-      +---- Payment failed ----> Create notification
-      |
-      v
-Payment successful
-      |
-      v
-Renew subscription
-      |
-      v
-Create notification
-```
+The backend currently exposes **30 controller endpoints** across authentication, user management, subscriptions, payments, and notifications.
 
-The worker uses `IHttpClientFactory`, obtains a JWT from the Authentication Service, checks for due subscriptions, calls the internal payment endpoint, creates notifications, and renews successfully paid subscriptions. It polls the workflow every **30 seconds** and supports cancellation through `CancellationToken`.
-
-## API Overview
-
-The current backend exposes **30 controller endpoints** across authentication, user management, subscriptions, payments, and notifications.
+<details>
+<summary><strong>View all endpoints</strong></summary>
 
 ### Authentication — `/auth`
 
@@ -122,9 +185,9 @@ The current backend exposes **30 controller endpoints** across authentication, u
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| GET | `/user/profile` | Get the authenticated user's profile |
-| PATCH | `/user/update` | Update the authenticated user's profile |
-| PATCH | `/user/changepassword` | Change the authenticated user's password |
+| GET | `/user/profile` | Get authenticated user's profile |
+| PATCH | `/user/update` | Update authenticated user's profile |
+| PATCH | `/user/changepassword` | Change authenticated user's password |
 | GET | `/user/alluser` | Admin: list users |
 | PATCH | `/user/role/{userId}` | Admin: update a user's role |
 
@@ -136,7 +199,7 @@ The current backend exposes **30 controller endpoints** across authentication, u
 | PATCH | `/subscription/update/{subscriptionId}` | Update a subscription |
 | GET | `/subscription/all` | Admin: list all subscriptions |
 | GET | `/subscription/{subscriptionId}` | Get a subscription by ID |
-| GET | `/subscription/user-subscription` | Get the current user's subscriptions |
+| GET | `/subscription/user-subscription` | Get current user's subscriptions |
 | PUT | `/subscription/status/{subscriptionId}/{status}` | Update subscription status |
 | DELETE | `/subscription/{subscriptionId}` | Admin: delete a subscription |
 | PATCH | `/subscription/renew/{subscriptionId}` | Worker: renew a subscription |
@@ -151,7 +214,7 @@ The current backend exposes **30 controller endpoints** across authentication, u
 | POST | `/payment/processinternal` | Worker: process an internal payment |
 | GET | `/payment/{paymentId}` | Get a payment by ID |
 | GET | `/payment/subscription/{subscriptionId}` | Get payments for a subscription |
-| GET | `/payment/transactions` | Get the user's transaction history |
+| GET | `/payment/transactions` | Get user's transaction history |
 | GET | `/payment/all` | Admin: list all payments |
 
 ### Notifications — `/notification`
@@ -159,36 +222,46 @@ The current backend exposes **30 controller endpoints** across authentication, u
 | Method | Endpoint | Purpose |
 |---|---|---|
 | POST | `/notification/create` | Worker: create a notification |
-| GET | `/notification/my` | Get the current user's notifications |
+| GET | `/notification/my` | Get current user's notifications |
 | PATCH | `/notification/readall` | Mark all notifications as read |
 | PATCH | `/notification/read/{notificationId}` | Mark a notification as read |
 | GET | `/notification/unreadcount` | Get unread notification count |
 | DELETE | `/notification/delete/{notificationId}` | Admin: delete a notification |
 | GET | `/notification/all` | Admin: list all notifications |
 
-## Tech Stack
+</details>
 
-**Backend**
-- C# / ASP.NET Core
-- Entity Framework Core
-- ASP.NET Identity
-- JWT authentication
-- Role-based authorization
-- SQL Server
-- Hosted `BackgroundService`
-- `IHttpClientFactory`
+---
 
-**Frontend**
-- React
-- TypeScript
-- Axios
-- React Hook Form
+## 🧰 Tech Stack
 
-**Tooling**
-- Postman
-- PowerShell
+### Backend
 
-## Project Structure
+- **C# / ASP.NET Core**
+- **Entity Framework Core**
+- **ASP.NET Identity**
+- **JWT Authentication**
+- **Role-Based Authorization**
+- **SQL Server**
+- **BackgroundService**
+- **IHttpClientFactory**
+
+### Frontend
+
+- **React**
+- **TypeScript**
+- **Axios**
+- **React Hook Form**
+
+### Development & Testing
+
+- **Postman**
+- **PowerShell**
+- **EF Core Migrations**
+
+---
+
+## 📁 Project Structure
 
 ```text
 Subtrack/
@@ -208,7 +281,9 @@ Subtrack/
 └── Subtrack.postman_collection.json # API testing collection
 ```
 
-## Getting Started
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -217,17 +292,14 @@ Subtrack/
 - SQL Server
 - Postman (optional, for API testing)
 
-### Backend
+### 1. Clone the repository
 
-The `Server` directory contains the five backend projects:
+```bash
+git clone https://github.com/chauhan12harsh/Subtrack.git
+cd Subtrack
+```
 
-1. Authentication
-2. Subscriptions
-3. Payments
-4. Notifications
-5. RenewalWorker
-
-Restore and build the solution:
+### 2. Build the backend
 
 ```bash
 cd Server
@@ -235,16 +307,16 @@ dotnet restore
 dotnet build
 ```
 
-You can run the services individually from their project directories, or start the full backend using the provided PowerShell script:
+Run the backend components individually from their project directories, or start them together with:
 
 ```powershell
 cd Server
 .\run-all.ps1
 ```
 
-Before running the Renewal Worker, configure its service endpoints and worker credentials in the configuration used by `Server/RenewalWorker`.
+Before starting the Renewal Worker, configure the service endpoints and worker credentials used by `Server/RenewalWorker`.
 
-### Frontend
+### 3. Run the frontend
 
 ```bash
 cd Client
@@ -252,18 +324,63 @@ npm install
 npm run dev
 ```
 
-The frontend currently contains dedicated Axios clients for Authentication, Subscription, Payment, and Notification services.
+The frontend contains dedicated Axios clients for Authentication, Subscription, Payment, and Notification services.
 
-### API Testing
+### 4. Test the APIs
 
 Import `Subtrack.postman_collection.json` into Postman to explore and test the backend APIs.
 
-## Database
+---
 
-The backend uses Entity Framework Core with service-specific database contexts and migrations. SQL Server is configured for the Notification Service, and the other services maintain their own EF Core data contexts.
+## 🗄️ Database
+
+The backend uses **Entity Framework Core** with service-specific database contexts and migrations.
+
+SQL Server is configured for the Notification Service, while the other services maintain their own EF Core data contexts.
 
 Make sure the relevant connection strings and application configuration are set for your local environment before starting the services.
 
-## License
+---
+
+## 🧭 What to Explore First
+
+If you're reviewing this project for the first time, a good path is:
+
+1. **Start with the architecture diagram** above to understand the service boundaries.
+2. **Open `Server/RenewalWorker`** to see the automated recurring-payment workflow.
+3. **Inspect the controllers** to see the 30-endpoint API surface and role restrictions.
+4. **Check the EF Core contexts/migrations** to understand persistence.
+5. **Open `Client/src/Services`** to see how the React frontend communicates with each backend service.
+6. **Import the Postman collection** to interact with the APIs.
+
+---
+
+## 🎯 Engineering Highlights
+
+This project demonstrates practical backend concepts including:
+
+- RESTful API design
+- JWT authentication and authorization
+- Role-based access control
+- Multi-service backend organization
+- Service-to-service communication
+- Background job processing
+- Recurring workflow orchestration
+- Payment workflow separation
+- Notification-driven workflow outcomes
+- Entity Framework Core and migrations
+- SQL Server persistence
+- React-to-API integration
+- API testing with Postman
+
+---
+
+## 📌 Project Status
+
+SubTrack is an actively developed portfolio project focused on demonstrating **real-world backend architecture and full-stack integration** rather than a simple CRUD application.
+
+---
+
+## 📄 License
 
 MIT
